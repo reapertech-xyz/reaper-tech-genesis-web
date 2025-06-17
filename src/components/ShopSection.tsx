@@ -41,7 +41,7 @@ const ShopSection = () => {
               <img 
                 src="/lovable-uploads/bd222062-3e34-4686-9281-e8f428f4c6df.png" 
                 alt="Electronics Accessories & Services Shop" 
-                className="relative w-80 h-80 md:w-96 md:h-96 object-cover rounded-lg border border-cyan-500/30"
+                className="relative w-full max-w-md lg:max-w-lg object-contain rounded-lg border border-cyan-500/30"
               />
             </div>
           </div>
