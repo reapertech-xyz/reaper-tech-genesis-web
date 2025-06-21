@@ -19,13 +19,13 @@ const ShortcutsSection = () => {
                 <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
                 <span className="font-mono">An AI-Powered Meme and Educational Subject Dissertation Generator</span>
               </div>
-              <div className="text-cyan-400 font-mono pl-5">"TiD-BiT 🧠"</div>
+              <div className="text-cyan-400 font-mono pl-5 text-xl">"TiD-BiT 🧠"</div>
 
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
                 <span className="font-mono">A sophisticated Encoding + Decoding White Space Steganographer</span>
               </div>
-              <div className="text-cyan-400 font-mono pl-5">"White Steg 🐕"</div>
+              <div className="text-cyan-400 font-mono pl-5 text-xl ">"White Steg 🐕"</div>
 
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
