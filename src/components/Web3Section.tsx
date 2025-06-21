@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +9,7 @@ const Web3Section = () => {
 
   const handleDomainSearch = () => {
     if (domainName.trim()) {
-      const searchUrl = 'https://freename.io/results?SO=S,C,T,F&search=%22${encodeURIComponent(domainName)}.reapertech%22';
+      const searchUrl = `https://freename.io/results?SO=S,C,T,F&search=%22${encodeURIComponent(domainName)}.reapertech%22`;
       window.open(searchUrl, '_blank');
     }
   };
