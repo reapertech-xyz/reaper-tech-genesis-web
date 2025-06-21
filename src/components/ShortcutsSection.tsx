@@ -37,7 +37,7 @@ const ShortcutsSection = () => {
               </div>
             </div>
 
-            <p className="text-gray-400">
+            <p className="text-gray-300 text-lg">
               Through these projects, the possibilities of iOS shortcuts are explored and expanded, transforming them into powerful tools that exceed expectations.
             </p>
 
