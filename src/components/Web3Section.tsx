@@ -1,38 +1,30 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-
 const Web3Section = () => {
   const [domainName, setDomainName] = useState("");
-
   const handleDomainSearch = () => {
     if (domainName.trim()) {
       const searchUrl = `https://freename.io/results?SO=S,C,T,F&search=%22${encodeURIComponent(domainName)}.reapertech%22`;
       window.open(searchUrl, '_blank');
     }
   };
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleDomainSearch();
     }
   };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Allow letters, numbers, hyphens, and basic domain-safe characters
     // This regex allows alphanumeric characters, hyphens, and underscores
     const domainSafeRegex = /^[a-zA-Z0-9\-_]*$/;
-    
     if (domainSafeRegex.test(value) || value === '') {
       setDomainName(value);
     }
   };
-
-  return (
-    <section className="bg-black text-white py-16 md:py-24 px-6">
+  return <section className="bg-black text-white py-16 md:py-24 px-6">
       <div className="max-w-4xl mx-auto text-center space-y-8">
         <h2 className="text-3xl md:text-4xl font-bold font-mono text-cyan-400">
           WantToFurtherSupport.reapertech?
@@ -65,8 +57,8 @@ const Web3Section = () => {
 
           <div className="space-y-4">
             <p className="font-mono">
-              Ex: apple.reapertech is <span className="text-green-400">$247.50</span> while 
-              ThisIsAnExample.reapertech is only <span className="text-green-400">$2.50</span>
+              Ex: apple.reapertech is <span className="text-green-400">$495 ($297.50 after promo below)</span> while 
+              ThisIsAnExample.reapertech is only <span className="text-green-400">$5 ($2.50 after promo)</span>
             </p>
             <p className="text-sm text-gray-500">(pricing is algorithmically determined at Freename.io's sole discretion)</p>
           </div>
@@ -88,30 +80,18 @@ const Web3Section = () => {
           
           <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
             <div className="relative flex-1">
-              <Input
-                type="text"
-                placeholder="Your Name of Choice"
-                value={domainName}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                className="bg-gray-800 border-cyan-500 text-white placeholder-gray-400 font-mono pr-28 focus:ring-2 focus:ring-cyan-400 focus:border-transparent text-base"
-              />
+              <Input type="text" placeholder="Your Name of Choice" value={domainName} onChange={handleInputChange} onKeyPress={handleKeyPress} className="bg-gray-800 border-cyan-500 text-white placeholder-gray-400 font-mono pr-28 focus:ring-2 focus:ring-cyan-400 focus:border-transparent text-base" />
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cyan-400 font-mono text-sm">
                 .reapertech
               </span>
             </div>
-            <Button 
-              onClick={handleDomainSearch}
-              className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono px-6 py-2 rounded-lg flex items-center space-x-2"
-            >
+            <Button onClick={handleDomainSearch} className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono px-6 py-2 rounded-lg flex items-center space-x-2">
               <Search className="w-4 h-4" />
               <span>DOMAIN SEARCH</span>
             </Button>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Web3Section;
