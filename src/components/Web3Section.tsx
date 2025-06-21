@@ -46,7 +46,7 @@ const Web3Section = () => {
           </p>
           
           <p className="text-sm">
-            You can learn more about Web3 vs Web2 <a href="#" className="text-cyan-400 underline">here</a>
+            You can learn more about Web3 vs Web2 <a href="https://chatgpt.com/share/680eb541-97f0-8002-9605-a423672e1f7e" className="text-cyan-400 underline">here</a>
           </p>
         </div>
 
