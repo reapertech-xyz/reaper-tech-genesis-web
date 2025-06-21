@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +16,17 @@ const Web3Section = () => {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleDomainSearch();
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow letters, numbers, hyphens, and basic domain-safe characters
+    // This regex allows alphanumeric characters, hyphens, and underscores
+    const domainSafeRegex = /^[a-zA-Z0-9\-_]*$/;
+    
+    if (domainSafeRegex.test(value) || value === '') {
+      setDomainName(value);
     }
   };
 
@@ -81,7 +91,7 @@ const Web3Section = () => {
                 type="text"
                 placeholder="Your Name of Choice"
                 value={domainName}
-                onChange={(e) => setDomainName(e.target.value)}
+                onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
                 className="bg-gray-800 border-cyan-500 text-white placeholder-gray-400 font-mono pr-28 focus:ring-2 focus:ring-cyan-400 focus:border-transparent text-base"
               />
