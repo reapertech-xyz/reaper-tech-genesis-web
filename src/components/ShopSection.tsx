@@ -25,7 +25,7 @@ const ShopSection = () => {
               <Button className="bg-cyan-500 hover:bg-cyan-600 text-gray-50 font-mono px-6 py-3 rounded-lg">
                 ACCESSORIES
               </Button>
-              <Button variant="outline" className="bg-gray-300 border-orange-500 text-orange-500 hover:bg-gray-800 font-mono px-6 py-3 rounded-lg">
+              <Button variant="outline" className="bg-gray-300 border-orange-500 text-orange-500 hover:bg-gray-800 hover:text-orange-800 font-mono px-6 py-3 rounded-lg">
                 SERVICES
               </Button>
             </div>
