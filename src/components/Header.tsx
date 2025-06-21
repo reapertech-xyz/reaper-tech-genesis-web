@@ -32,7 +32,7 @@ const Header = () => {
       {/* Hero Content */}
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 py-12">
         <div className="mb-8">
-          <img alt="Reaper Tech" src="/lovable-uploads/737fa37e-72d2-4527-a59a-a57c7928eb10.png" className="w-80 h-80 md:w-48 md:h-48 mx-auto mb-8 animate-ping" />
+          <img alt="Reaper Tech" src="/lovable-uploads/737fa37e-72d2-4527-a59a-a57c7928eb10.png" className="w-80 h-80 md:w-48 md:h-48 mx-auto mb-8 animate-pulse" />
         </div>
 
         <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-mono px-8 py-3 rounded-lg mb-12 animate-pulse">
