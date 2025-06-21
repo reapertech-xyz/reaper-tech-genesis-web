@@ -32,7 +32,7 @@ const ShortcutsSection = () => {
                 <span className="font-mono">A comprehensive Pi (π) Network Cryptocurrency Wallet</span>
               </div>
               <div className="text-cyan-400 font-mono pl-5 flex items-center space-x-2">
-                <span>"Slice Of Pi 🥧"</span>
+                <span className="text-cyan-400 font-mono text-xl ">"Slice Of Pi 🥧"</span>
                 <span className="text-orange-500 text-sm">(Currently in Development)</span>
               </div>
             </div>
