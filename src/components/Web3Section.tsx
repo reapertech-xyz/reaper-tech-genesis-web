@@ -8,7 +8,7 @@ const Web3Section = () => {
 
   const handleDomainSearch = () => {
     if (domainName.trim()) {
-      const searchUrl = `https://freename.io/results?search=${encodeURIComponent(domainName)}.reapertech&SO=S,C,T,F`;
+      const searchUrl = 'https://freename.io/results?SO=S,C,T,F&search="${encodeURIComponent(domainName)}.reapertech"';
       window.open(searchUrl, '_blank');
     }
   };
