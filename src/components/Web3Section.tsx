@@ -33,7 +33,7 @@ const Web3Section = () => {
         <div className="space-y-6 text-gray-300">
           <p className="text-lg">
             Billions of SLDs (second level domains) under our TLD (Top level domain): 
-            <span className="text-cyan-400 font-mono">.reapertech</span> are available for purchase! 
+            <span className="text-cyan-400 font-mono"> .reapertech </span> are available for purchase! 
             Not only will you <span className="text-cyan-400 font-mono">forever</span> own a domain, 
             but you'll also be supporting Reaper Tech & taking <span className="text-cyan-400 font-mono">full ownership</span> of your Web3 identity!
           </p>
@@ -51,8 +51,8 @@ const Web3Section = () => {
             Freename.io by finding more obscure names. And if you're feeling like splurging, explore some 
             more popular or common names as well. We just ask that you respect general identities, and allow 
             for others a chance to express a harmless version of your name as well. What truly matters in the 
-            spaces of Web3 is not exactly <span className="text-cyan-400 font-mono">who you are</span>, but the 
-            <span className="text-cyan-400 font-mono">relationships you share with others</span>.
+            spaces of Web3 is not exactly <span className="text-cyan-400 font-mono"> who you are</span>, but the 
+            <span className="text-cyan-400 font-mono"> relationships you share with others</span>.
           </p>
 
           <div className="space-y-4">
@@ -60,7 +60,7 @@ const Web3Section = () => {
               Ex: apple.reapertech is <span className="text-green-400">$495 ($297.50 after promo below)</span> while 
               ThisIsAnExample.reapertech is only <span className="text-green-400">$5 ($2.50 after promo)</span>
             </p>
-            <p className="text-sm text-gray-500">(pricing is algorithmically determined at Freename.io's sole discretion)</p>
+            <p className="text-sm text-gray-500">(Pricing for domain names is algorithmically determined at Freename.io's sole discretion.)</p>
           </div>
         </div>
 
