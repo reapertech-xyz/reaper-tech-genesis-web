@@ -52,7 +52,7 @@ const ShortcutsSection = () => {
           <div className="flex justify-center lg:justify-end">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg blur-xl"></div>
-              <img src="/lovable-uploads/d58b2aad-a3c0-4c35-bf62-b7b7b9632189.png" alt="Reaper with circuit board background" className="relative w-full h-full md:w-96 md:h-96 object-cover rounded-lg border border-cyan-500/30" />
+              <img src="/lovable-uploads/d58b2aad-a3c0-4c35-bf62-b7b7b9632189.png" alt="Reaper with circuit board background" className="relative w-full h-full md:w-96 object-cover rounded-lg border border-cyan-500/30" />
             </div>
           </div>
         </div>
