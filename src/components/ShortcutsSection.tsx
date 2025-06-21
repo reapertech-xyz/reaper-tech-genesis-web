@@ -19,32 +19,32 @@ const ShortcutsSection = () => {
                 <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
                 <span className="font-mono">An AI-Powered Meme and Educational Subject Dissertation Generator</span>
               </div>
-              <div className="text-cyan-400 font-mono pl-5">"TiD-BiT 🧠"</div>
+              <div className="text-cyan-400 font-mono pl-5 text-xl">"TiD-BiT 🧠"</div>
 
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
                 <span className="font-mono">A sophisticated Encoding + Decoding White Space Steganographer</span>
               </div>
-              <div className="text-cyan-400 font-mono pl-5">"White Steg 🐕"</div>
+              <div className="text-cyan-400 font-mono pl-5 text-xl ">"White Steg 🐕"</div>
 
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
                 <span className="font-mono">A comprehensive Pi (π) Network Cryptocurrency Wallet</span>
               </div>
               <div className="text-cyan-400 font-mono pl-5 flex items-center space-x-2">
-                <span>"Slice Of Pi 🥧"</span>
+                <span className="text-cyan-400 font-mono text-xl ">"Slice Of Pi 🥧"</span>
                 <span className="text-orange-500 text-sm">(Currently in Development)</span>
               </div>
             </div>
 
-            <p className="text-gray-400">
+            <p className="text-gray-300 text-lg">
               Through these projects, the possibilities of iOS shortcuts are explored and expanded, transforming them into powerful tools that exceed expectations.
             </p>
 
-            <Button className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono px-6 py-3 rounded-lg flex items-center space-x-2">
+            <Button className="bg-cyan-500 hover:bg-cyan-600 font-mono px-6 py-3 rounded-lg flex items-center space-x-2 text-gray-50">
               <Download className="w-4 h-4" />
               <Share className="w-4 h-4" />
-              <span>DOWNLOAD & SHARE</span>
+              <span className="text-gray-50">DOWNLOAD & SHARE</span>
             </Button>
           </div>
 
