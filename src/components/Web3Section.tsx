@@ -75,7 +75,7 @@ const Web3Section = () => {
         <div className="space-y-4">
           <h3 className="text-2xl font-mono text-cyan-400">Electronics aren't the only thing we love reaping!</h3>
           
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
             <div className="relative flex-1">
               <Input
                 type="text"
@@ -83,7 +83,7 @@ const Web3Section = () => {
                 value={domainName}
                 onChange={(e) => setDomainName(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="bg-gray-800 border-cyan-500 text-white placeholder-gray-400 font-mono pr-24 focus:ring-2 focus:ring-cyan-400 focus:border-transparent"
+                className="bg-gray-800 border-cyan-500 text-white placeholder-gray-400 font-mono pr-28 focus:ring-2 focus:ring-cyan-400 focus:border-transparent text-base"
               />
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cyan-400 font-mono text-sm">
                 .reapertech
