@@ -31,7 +31,7 @@ const Web3Section = () => {
         </h2>
         
         <div className="space-y-6 text-gray-300">
-          <p className="text-lg">
+          <p className="text-lg text-gray-200">
             Billions of SLDs (second level domains) under our TLD (Top level domain): 
             <span className="text-cyan-400 font-mono"> .reapertech </span> are available for purchase! 
             Not only will you <span className="text-cyan-400 font-mono">forever</span> own a domain, 
@@ -44,7 +44,7 @@ const Web3Section = () => {
         </div>
 
         <div className="bg-gray-900 p-8 rounded-lg border border-gray-700">
-          <p className="text-gray-400 mb-6">
+          <p className="mb-6 text-gray-200">
             Type your personal, business, or community's/organization's name in the text box below to see 
             the pricing and availability of the Web3 domain name of your choice. Domains range from 1$ to 
             over $1000 depending on the name, so you can often negotiate with yourself a bit and 
@@ -56,16 +56,16 @@ const Web3Section = () => {
           </p>
 
           <div className="space-y-4">
-            <p className="font-mono">
+            <p className="font-mono text-gray-200">
               Ex: apple.reapertech is <span className="text-green-400">$495 ($297.50 after promo below)</span> while 
               ThisIsAnExample.reapertech is only <span className="text-green-400">$5 ($2.50 after promo)</span>
             </p>
-            <p className="text-sm text-gray-500">(Pricing for domain names is algorithmically determined at Freename.io's sole discretion.)</p>
+            <p className="text-sm text-gray-400">(Pricing for domain names is algorithmically determined at Freename.io's sole discretion.)</p>
           </div>
         </div>
 
         <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 p-6 rounded-lg border border-orange-500/30">
-          <p className="text-lg font-mono">
+          <p className="text-lg font-mono text-gray-200">
             Wait, there's more! Use promo code: <span className="text-orange-400">"VIP50OFFSLD"</span> to get{" "}
             <span className="text-orange-400 font-bold">50% off</span> your SLD of choice under{" "}
             <span className="text-cyan-400">.reapertech</span>
