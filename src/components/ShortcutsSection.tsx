@@ -1,10 +1,7 @@
-
 import { Button } from "@/components/ui/button";
 import { Download, Share } from "lucide-react";
-
 const ShortcutsSection = () => {
-  return (
-    <section className="bg-black text-white py-16 md:py-24 px-6">
+  return <section className="bg-black text-white py-16 md:py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
@@ -55,17 +52,11 @@ const ShortcutsSection = () => {
           <div className="flex justify-center lg:justify-end">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg blur-xl"></div>
-              <img 
-                src="/lovable-uploads/d58b2aad-a3c0-4c35-bf62-b7b7b9632189.png" 
-                alt="Reaper with circuit board background" 
-                className="relative w-80 h-80 md:w-96 md:h-96 object-cover rounded-lg border border-cyan-500/30"
-              />
+              <img src="/lovable-uploads/d58b2aad-a3c0-4c35-bf62-b7b7b9632189.png" alt="Reaper with circuit board background" className="relative w-full h-full md:w-96 md:h-96 object-cover rounded-lg border border-cyan-500/30" />
             </div>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default ShortcutsSection;
