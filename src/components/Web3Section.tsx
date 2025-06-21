@@ -38,7 +38,7 @@ const Web3Section = () => {
             but you'll also be supporting Reaper Tech & taking <span className="text-cyan-400 font-mono">full ownership</span> of your Web3 identity!
           </p>
           
-          <p className="text-sm">
+          <p className="text-sm text-gray-400">
             You can learn more about Web3 vs Web2 <a href="#" className="text-cyan-400 underline">here</a>
           </p>
         </div>
