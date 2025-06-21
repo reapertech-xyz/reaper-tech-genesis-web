@@ -47,7 +47,7 @@ const Header = () => {
           </div>
         </div>
 
-        <p className="text-lg md:text-xl text-gray-300 font-mono max-w-3xl mb-8">
+        <p className="text-2xl md:text-xl font-mono max-w-3xl mb-8 text-orange-500 ">
           With no rush, we move with purpose, not pressure...
         </p>
       </div>

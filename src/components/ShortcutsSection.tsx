@@ -41,10 +41,10 @@ const ShortcutsSection = () => {
               Through these projects, the possibilities of iOS shortcuts are explored and expanded, transforming them into powerful tools that exceed expectations.
             </p>
 
-            <Button className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono px-6 py-3 rounded-lg flex items-center space-x-2">
+            <Button className="bg-cyan-500 hover:bg-cyan-600 font-mono px-6 py-3 rounded-lg flex items-center space-x-2 text-gray-50">
               <Download className="w-4 h-4" />
               <Share className="w-4 h-4" />
-              <span>DOWNLOAD & SHARE</span>
+              <span className="text-gray-50">DOWNLOAD & SHARE</span>
             </Button>
           </div>
 
