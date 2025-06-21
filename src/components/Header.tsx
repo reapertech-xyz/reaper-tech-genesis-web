@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 const Header = () => {
@@ -30,7 +31,7 @@ const Header = () => {
       </nav>
 
       {/* Hero Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 py-20">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 py-12">
         <div className="mb-8">
           <img alt="Reaper Tech" className="w-32 h-32 md:w-48 md:h-48 mx-auto mb-8 animate-pulse" src="/lovable-uploads/737fa37e-72d2-4527-a59a-a57c7928eb10.png" />
         </div>
@@ -47,7 +48,7 @@ const Header = () => {
           </div>
         </div>
 
-        <p className="text-lg md:text-xl text-gray-300 font-mono max-w-3xl">
+        <p className="text-lg md:text-xl text-gray-300 font-mono max-w-3xl mb-8">
           With no rush, we move with purpose, not pressure...
         </p>
       </div>
