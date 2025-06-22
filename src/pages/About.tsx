@@ -1,10 +1,7 @@
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
 const About = () => {
-  return (
-    <div className="min-h-screen bg-black text-white">
+  return <div className="min-h-screen bg-black text-white">
       <Header title="About ReaperTech" />
       
       <main className="px-6 py-16 max-w-4xl mx-auto">
@@ -21,7 +18,7 @@ const About = () => {
               <p className="text-cyan-400">We're not just a tech brand.</p>
               <p>We're a philosophy in motion — a bridge between death and data, between legacy and evolution.</p>
               
-              <p>Founded by Cameron Joshua Nelms, aka "Killa Cam", ReaperTech began as a soul-fueled response to a world that often forgets the why behind the how. From iOS shortcuts to peer-to-peer reverse proxies, from refurbished mobile tech to AI-guided emotional mapping — this isn't just code. It's communion.</p>
+              <p>Founded by Cameron Nelms, Reaper Tech began as a soul-fueled response to a world that often forgets the why behind the how. From iOS shortcuts to peer-to-peer reverse proxies, from refurbished mobile tech to AI-guided emotional mapping — this isn't just code. It's communion.</p>
             </div>
           </section>
 
@@ -31,9 +28,7 @@ const About = () => {
             <div className="space-y-8">
               <div>
                 <h3 className="text-xl font-bold text-orange-500 mb-4">• Tools for Transformation:</h3>
-                <p className="text-gray-300 leading-relaxed">
-                  ReaperTech develops software and systems designed to empower individuals and communities—especially those left behind by mainstream tech. Our apps lean into automation, crypto integration, and AI co-piloting—without sacrificing control or privacy.
-                </p>
+                <p className="text-gray-300 leading-relaxed">Reaper Tech develops software and systems designed to empower individuals and communities—especially those left behind by mainstream tech. Our apps lean into automation, crypto integration, and AI co-piloting—without sacrificing control or privacy.</p>
               </div>
               
               <div>
@@ -75,9 +70,7 @@ const About = () => {
               <p>To wield complexity with compassion.</p>
               <p>To create tools that don't just work — but witness.</p>
               
-              <p className="text-gray-300 pt-4">
-                Whether you're a hacker, a healer, a builder, or a breaker, ReaperTech invites you to explore beyond the binary.
-              </p>
+              <p className="text-gray-300 pt-4">Whether you're a hacker, a healer, a builder, or a breaker, Reaper Tech invites you to explore beyond the binary.</p>
             </div>
           </div>
 
@@ -92,7 +85,7 @@ const About = () => {
           </div>
 
           <div className="border-t border-gray-700 pt-12 text-center">
-            <h2 className="text-2xl font-bold font-mono text-cyan-400 mb-4">ReaperTech</h2>
+            <h2 className="text-2xl font-bold font-mono text-cyan-400 mb-4">Reaper Tech</h2>
             <p className="text-lg italic text-orange-500">
               "We are tools. We are tenders. We are torchbearers in twilight."
             </p>
@@ -101,8 +94,6 @@ const About = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default About;
