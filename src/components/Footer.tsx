@@ -38,8 +38,8 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-gray-400 font-mono">© 2025</p>
             <div className="flex space-x-8">
-              <Link to="/terms" className="text-gray-400 hover:text-cyan-400 transition-colors font-mono text-sm">Terms of Service</Link>
-              <Link to="/terms" className="text-gray-400 hover:text-cyan-400 transition-colors font-mono text-sm">Privacy Policy</Link>
+              <a href="/terms" className="text-gray-400 hover:text-cyan-400 transition-colors font-mono text-sm">Terms of Service</Link>
+              <a href="/terms" className="text-gray-400 hover:text-cyan-400 transition-colors font-mono text-sm">Privacy Policy</Link>
             </div>
           </div>
         </div>
