@@ -2,19 +2,23 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-const Web3Section = ({ cta }: { cta?: string }) => (
+
+const Web3Section = ({ cta }: { cta?: string }) => {
   const [domainName, setDomainName] = useState("");
+  
   const handleDomainSearch = () => {
     if (domainName.trim()) {
       const searchUrl = `https://freename.io/results?SO=S,C,T,F&search=%22${encodeURIComponent(domainName)}.reapertech%22`;
       window.open(searchUrl, '_blank');
     }
   };
+  
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleDomainSearch();
     }
   };
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Allow letters, numbers, hyphens, and basic domain-safe characters
@@ -24,7 +28,9 @@ const Web3Section = ({ cta }: { cta?: string }) => (
       setDomainName(value);
     }
   };
-  return <section className="bg-black text-white py-16 md:py-24 px-6">
+
+  return (
+    <section className="bg-black text-white py-16 md:py-24 px-6">
       <div className="max-w-4xl mx-auto text-center space-y-8">
         <h2 className="text-3xl md:text-4xl font-bold font-mono text-cyan-400">
           WantToFurtherSupport.reapertech?
@@ -99,6 +105,8 @@ const Web3Section = ({ cta }: { cta?: string }) => (
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default Web3Section;
