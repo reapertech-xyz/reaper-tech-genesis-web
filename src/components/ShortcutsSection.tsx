@@ -1,7 +1,11 @@
+
 import { Button } from "@/components/ui/button";
 import { Download, Share } from "lucide-react";
+import { Link } from "react-router-dom";
+
 const ShortcutsSection = () => {
-  return <section className="bg-black text-white py-16 md:py-24 px-6">
+  return (
+    <section className="bg-black text-white py-16 md:py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
@@ -41,11 +45,13 @@ const ShortcutsSection = () => {
               Through these projects, the possibilities of iOS shortcuts are explored and expanded, transforming them into powerful tools that exceed expectations.
             </p>
 
-            <Button className="bg-cyan-500 hover:bg-cyan-600 font-mono px-6 py-3 rounded-lg flex items-center space-x-2 text-gray-50">
-              <Download className="w-4 h-4" />
-              <Share className="w-4 h-4" />
-              <span className="text-gray-50">DOWNLOAD & SHARE</span>
-            </Button>
+            <Link to="/shortcuts">
+              <Button className="bg-cyan-500 hover:bg-cyan-600 font-mono px-6 py-3 rounded-lg flex items-center space-x-2 text-gray-50">
+                <Download className="w-4 h-4" />
+                <Share className="w-4 h-4" />
+                <span className="text-gray-50">DOWNLOAD & SHARE</span>
+              </Button>
+            </Link>
           </div>
 
           {/* Image */}
@@ -57,6 +63,8 @@ const ShortcutsSection = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default ShortcutsSection;

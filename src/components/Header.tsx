@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-const Header = ({ title }: { title?: string }) => (
-  return <header className="relative min-h-screen bg-black text-white overflow-hidden">
+import { Link } from "react-router-dom";
+
+const Header = ({ title }: { title?: string }) => {
+  return (
+    <header className="relative min-h-screen bg-black text-white overflow-hidden">
       {/* Animated background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -13,19 +16,19 @@ const Header = ({ title }: { title?: string }) => (
 
       {/* Navigation */}
       <nav className="relative z-10 flex justify-between items-center p-6 md:p-8">
-        <div className="flex items-center space-x-4">
+        <Link to="/" className="flex items-center space-x-4">
           <img alt="Reaper Tech Logo" className="w-12 h-12 md:w-16 md:h-16" src="/lovable-uploads/f9eca089-3b42-4b20-9bc1-903799fff348.png" />
           <div>
             <h1 className="text-xl md:text-2xl font-bold font-mono">REAPER TECH</h1>
             <p className="text-xs md:text-sm text-gray-400 font-mono">YOU REAP WHAT YOU SOW</p>
           </div>
-        </div>
+        </Link>
         
         <div className="hidden md:flex space-x-8 font-mono text-sm">
-          <a href="#" className="hover:text-cyan-400 transition-colors">Home</a>
-          <a href="#" className="hover:text-cyan-400 transition-colors">About Us</a>
-          <a href="#" className="hover:text-cyan-400 transition-colors">iOS Shortcuts Gallery</a>
-          <a href="#" className="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded transition-colors">Shop & Services</a>
+          <Link to="/" className="hover:text-cyan-400 transition-colors">Home</Link>
+          <Link to="/about" className="hover:text-cyan-400 transition-colors">About Us</Link>
+          <Link to="/shortcuts" className="hover:text-cyan-400 transition-colors">iOS Shortcuts Gallery</Link>
+          <Link to="/shop" className="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded transition-colors text-black">Shop & Services</Link>
         </div>
       </nav>
 
@@ -51,6 +54,8 @@ const Header = ({ title }: { title?: string }) => (
           With no rush, we move with purpose, not pressure...
         </p>
       </div>
-    </header>;
+    </header>
+  );
 };
+
 export default Header;

@@ -1,12 +1,16 @@
+
 import { Button } from "@/components/ui/button";
-const ShopSection = () => {
-  return <section className="bg-gray-900 text-white py-16 md:py-24 px-6">
+import { Link } from "react-router-dom";
+
+const ShopSection = ({ title, description }: { title?: string; description?: string }) => {
+  return (
+    <section className="bg-gray-900 text-white py-16 md:py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
           <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl font-bold font-mono text-cyan-400">
-              Coming Soon: New Shop + Payments via Pi Network!
+              {title || "Coming Soon: New Shop + Payments via Pi Network!"}
             </h2>
             
             <p className="text-2xl text-gray-200">
@@ -14,7 +18,7 @@ const ShopSection = () => {
             </p>
 
             <p className="text-2xl text-gray-200">
-              Discover a wide range of products, including charging adapters, durable cables, high-quality screen protectors, and more.
+              {description || "Discover a wide range of products, including charging adapters, durable cables, high-quality screen protectors, and more."}
             </p>
 
             <p className="text-2xl text-gray-200">
@@ -22,12 +26,16 @@ const ShopSection = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button className="bg-cyan-500 hover:bg-cyan-600 text-gray-50 font-mono px-6 py-3 rounded-lg">
-                ACCESSORIES
-              </Button>
-              <Button variant="outline" className="bg-gray-300 border-orange-500 text-orange-500 hover:bg-gray-800 hover:text-orange-800 font-mono px-6 py-3 rounded-lg">
-                SERVICES
-              </Button>
+              <Link to="/shop">
+                <Button className="bg-cyan-500 hover:bg-cyan-600 text-gray-50 font-mono px-6 py-3 rounded-lg w-full sm:w-auto">
+                  ACCESSORIES
+                </Button>
+              </Link>
+              <Link to="/shop">
+                <Button variant="outline" className="bg-gray-300 border-orange-500 text-orange-500 hover:bg-gray-800 hover:text-orange-800 font-mono px-6 py-3 rounded-lg w-full sm:w-auto">
+                  SERVICES
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -40,6 +48,8 @@ const ShopSection = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default ShopSection;

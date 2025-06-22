@@ -1,5 +1,6 @@
 
 import { Instagram, Facebook } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -8,8 +9,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
           {/* Navigation Links */}
           <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
-            <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors font-mono">About us</a>
-            <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors font-mono">iOS Shortcuts Gallery</a>
+            <Link to="/about" className="text-gray-400 hover:text-cyan-400 transition-colors font-mono">About us</Link>
+            <Link to="/shortcuts" className="text-gray-400 hover:text-cyan-400 transition-colors font-mono">iOS Shortcuts Gallery</Link>
           </div>
 
           {/* Social Links */}
@@ -24,12 +25,12 @@ const Footer = () => {
 
           {/* Shop & Services Button */}
           <div className="flex justify-center md:justify-end">
-            <a 
-              href="#" 
+            <Link 
+              to="/shop" 
               className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono px-6 py-2 rounded-lg transition-colors"
             >
               Shop & Services
-            </a>
+            </Link>
           </div>
         </div>
 
