@@ -7,12 +7,10 @@ const About = () => {
       <main className="px-6 py-16 max-w-4xl mx-auto">
         <div className="space-y-12">
           <section className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold font-mono text-cyan-400 mb-8">
-              🌑 About ReaperTech
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold font-mono text-cyan-400 mb-8">🌑 About Reaper Tech</h1>
             
             <div className="space-y-6 text-lg md:text-xl leading-relaxed">
-              <p>Welcome to ReaperTech.</p>
+              <p>Welcome to Reaper Tech.</p>
               <p>Where endings spark innovation, and shadows sharpen light.</p>
               
               <p className="text-cyan-400">We're not just a tech brand.</p>
