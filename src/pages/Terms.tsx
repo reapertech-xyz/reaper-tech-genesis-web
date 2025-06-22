@@ -1,10 +1,7 @@
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
 const Terms = () => {
-  return (
-    <div className="min-h-screen bg-black text-white">
+  return <div className="min-h-screen bg-black text-white">
       <Header title="Terms & Privacy" />
       
       <main className="px-6 py-16 max-w-4xl mx-auto">
@@ -30,16 +27,12 @@ const Terms = () => {
             <div className="space-y-8">
               <div>
                 <h2 className="text-2xl font-bold font-mono text-cyan-400 mb-4">1. Acceptance of Terms</h2>
-                <p className="text-gray-300 leading-relaxed">
-                  By accessing or using ReaperTech's website, products, digital tools, shortcuts, or services ("Services"), you agree to be bound by these Terms. If you do not agree, you may not access the site or use any services provided by ReaperTech.
-                </p>
+                <p className="text-gray-300 leading-relaxed">By accessing or using Reaper Tech's website, products, digital tools, shortcuts, or services ("Services"), you agree to be bound by these Terms. If you do not agree, you may not access the site or use any services provided by ReaperT ech.</p>
               </div>
 
               <div>
                 <h2 className="text-2xl font-bold font-mono text-cyan-400 mb-4">2. Purpose</h2>
-                <p className="text-gray-300 leading-relaxed">
-                  ReaperTech exists to empower individuals through automation, AI co-pilots, cryptocurrency tools, and privacy-centric infrastructure. We create solutions that walk the edge of possibility: poetic, technical, and transformational.
-                </p>
+                <p className="text-gray-300 leading-relaxed">Reaper Tech exists to empower individuals through automation, AI co-pilots, cryptocurrency tools, and privacy-centric infrastructure. We create solutions that walk the edge of possibility: poetic, technical, and transformational.</p>
               </div>
 
               <div>
@@ -57,9 +50,7 @@ const Terms = () => {
 
               <div>
                 <h2 className="text-2xl font-bold font-mono text-cyan-400 mb-4">4. Intellectual Property</h2>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  All content on this site — including logos, tools, text, code, visuals, and branded materials — are property of ReaperTech unless otherwise noted.
-                </p>
+                <p className="text-gray-300 leading-relaxed mb-4">All content on this site — including logos, tools, text, code, visuals, and branded materials — are property of Reaper Tech unless otherwise noted.</p>
                 <p className="text-gray-300 leading-relaxed">
                   Shortcuts, scripts, and open-source tools may be used, shared, or modified for personal or educational purposes. Commercial use requires written consent.
                 </p>
@@ -76,9 +67,7 @@ const Terms = () => {
 
               <div>
                 <h2 className="text-2xl font-bold font-mono text-cyan-400 mb-4">6. Limitation of Liability</h2>
-                <p className="text-gray-300 leading-relaxed">
-                  ReaperTech shall not be liable for any direct, indirect, incidental, or consequential damages resulting from your use of the website or its tools — digital or physical. You assume full responsibility for how you engage with our Services.
-                </p>
+                <p className="text-gray-300 leading-relaxed">Reaper Tech shall not be liable for any direct, indirect, incidental, or consequential damages resulting from your use of the website or its tools — digital or physical. You assume full responsibility for how you engage with our Services.</p>
               </div>
 
               <div>
@@ -191,7 +180,7 @@ const Terms = () => {
               <div>
                 <h2 className="text-2xl font-bold font-mono text-cyan-400 mb-4">8. Final Words</h2>
                 <div className="text-center space-y-2 text-gray-300 leading-relaxed">
-                  <p>At ReaperTech, we don't just build tools.</p>
+                  <p>At Reaper Tech, we don't just build tools.</p>
                   <p>We craft lanterns for the journey.</p>
                   <p>And we don't follow your steps — we protect the path ahead.</p>
                 </div>
@@ -202,8 +191,6 @@ const Terms = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Terms;
