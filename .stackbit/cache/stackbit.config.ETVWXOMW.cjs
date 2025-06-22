@@ -25,7 +25,7 @@ module.exports = __toCommonJS(stackbit_config_exports);
 var import_types = require("@stackbit/types");
 var import_cms_git = require("@stackbit/cms-git");
 var stackbit_config_default = (0, import_types.defineStackbitConfig)({
-  // ...
+  stackbitVersion: "~0.5.0",
   contentSources: [
     new import_cms_git.GitContentSource({
       rootPath: "/Users/mac/Documents/GitHub Projects/reaper-tech-genesis-web",
@@ -43,4 +43,4 @@ var stackbit_config_default = (0, import_types.defineStackbitConfig)({
     })
   ]
 });
-//# sourceMappingURL=stackbit.config.RLEAMUUY.cjs.map
+//# sourceMappingURL=stackbit.config.ETVWXOMW.cjs.map
