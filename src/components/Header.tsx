@@ -34,6 +34,7 @@ const Header = ({ title }: { title?: string }) => {
           <Link to="/" className="hover:text-cyan-400 transition-colors">Home</Link>
           <Link to="/about" className="hover:text-cyan-400 transition-colors">About Us</Link>
           <Link to="/shortcuts" className="hover:text-cyan-400 transition-colors">iOS Shortcuts Gallery</Link>
+          <Link to="/cart" className="hover:text-cyan-400 transition-colors">🛒 Cart</Link>
           <Link to="/shop" className="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded transition-colors text-black">Shop & Services</Link>
         </div>
       </nav>

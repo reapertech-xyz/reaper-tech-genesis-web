@@ -50,6 +50,12 @@ const Shop = () => {
     }
   ];
 
+  const handleAddToCart = (productTitle: string) => {
+    console.log("Adding to cart:", productTitle);
+    // Navigate to cart page for now
+    window.location.href = '/cart';
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <Header title="The Reaper's Cache" />
@@ -82,7 +88,10 @@ const Shop = () => {
                 <p className="text-gray-300 leading-relaxed mb-4">
                   {product.description}
                 </p>
-                <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono">
+                <Button 
+                  onClick={() => handleAddToCart(product.title)}
+                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
+                >
                   Add to Cart
                 </Button>
               </CardContent>
