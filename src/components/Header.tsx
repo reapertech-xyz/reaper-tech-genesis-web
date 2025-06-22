@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-const Header = () => {
+const Header = ({ title }: { title?: string }) => (
   return <header className="relative min-h-screen bg-black text-white overflow-hidden">
       {/* Animated background effects */}
       <div className="absolute inset-0">

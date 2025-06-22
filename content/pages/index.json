@@ -1,5 +1,12 @@
-
 {
-  "title": "Home",
-  "slug": "index"
+  "title": "ReaperTech Portal",
+  "slug": "index",
+  "headerTitle": "Welcome to ReaperTech",
+  "shop": {
+    "title": "Tools of the Trade",
+    "description": "Curated gear for visionaries and edgewalkers."
+  },
+  "web3": {
+    "cta": "Explore the next frontier — own your presence."
+  }
 }

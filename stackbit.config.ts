@@ -15,9 +15,22 @@ stackbitVersion: "~0.5.0",
           type: "page",
           urlPath: "/{slug}",
           filePath: "content/pages/{slug}.json",
-          fields: [{ name: "title", type: "string", required: true }]
-        }
-      ],
-    })
-  ]
-});
+            fields: [
+              { name: "title", type: "string", required: true },
+              { name: "headerTitle", type: "string" },
+              {
+                name: "shop",
+                type: "object",
+                fields: [
+                  { name: "title", type: "string" },
+                  { name: "description", type: "text" }
+                ]
+              },
+              {
+                name: "web3",
+                type: "object",
+                fields: [
+                  { name: "cta", type: "string" }
+                ]
+              }
+            ]

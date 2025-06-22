@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-const Web3Section = () => {
+const Web3Section = ({ cta }: { cta?: string }) => (
   const [domainName, setDomainName] = useState("");
   const handleDomainSearch = () => {
     if (domainName.trim()) {
