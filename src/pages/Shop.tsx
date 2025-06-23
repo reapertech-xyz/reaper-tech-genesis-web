@@ -3,34 +3,52 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  qty: number;
+}
 
 const Shop = () => {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  
   const products = [
     {
+      id: "usb-c-to-usb-c",
       title: "⚡ USB-C to USB-C Cable",
       prices: "$6 / $8 / $10",
       subtitle: "3ft / 6ft / 10ft",
       style: "Braided, Durable, PD-Ready",
       description: "For when power meets purpose. Charge your Android, iPad, MacBook, Steam Deck, or future-self with this high-speed link. Braided to survive life's tangles — fast enough to keep up with yours.",
-      images: []
+      images: [],
+      price: 8
     },
     {
+      id: "usb-c-to-usb-a",
       title: "⚙️ USB-C to USB-A Cable",
       prices: "$5 / $7 / $9",
       subtitle: "3ft / 6ft / 10ft",
       style: "Classic Sync & Charge",
       description: "Because not everything old is obsolete. Bridge the past and present with this classic combo — your USB-A chargers still have work to do, and this cord makes sure they're still invited to the party.",
-      images: []
+      images: [],
+      price: 7
     },
     {
+      id: "usb-c-to-lightning",
       title: "🍎 USB-C to Lightning Cable",
       prices: "$8 / $10 / $12",
       subtitle: "3ft / 6ft / 10ft",
       style: "Apple MFi Certified",
       description: "A cord for the Apple-inclined. Whether you're juicing up your iPhone, AirPods, or memories — this one does it fast, clean, and with reverence for the cult of Cupertino.",
-      images: []
+      images: [],
+      price: 10
     },
     {
+      id: "20w-dual-adapter",
       title: "🔋 20W USB-A + USB-C Wall Adapter",
       prices: "$10",
       subtitle: "Dual Output: 1x USB-C PD + 1x USB-A QC",
@@ -42,17 +60,27 @@ const Shop = () => {
         "/lovable-uploads/40b46ec3-f94b-4929-b158-e4c5a4a20634.png",
         "/lovable-uploads/9be0c8a6-4ae6-4101-83da-17633e0cae12.png",
         "/lovable-uploads/e7bf68fa-5661-4824-8c2b-9d68ddb391c6.png"
-      ]
+      ],
+      price: 10
     },
     {
+      id: "65w-laptop-charger",
       title: "💻 65W USB-C Laptop Charger Block",
       prices: "$18",
       subtitle: "Single Port: USB-C PD 3.0",
       style: "For your MacBook, iPad Pro, Chromebook, Steam Deck, or anything else that breathes in watts.",
       description: "This is the block that doesn't break — small enough to pocket, powerful enough to resurrect.",
-      images: []
+      images: [
+        "/lovable-uploads/41e8d866-fd9d-4929-8109-4e9bc706e4c8.png",
+        "/lovable-uploads/028243a6-798c-4bd8-90b7-13cf369f9000.png",
+        "/lovable-uploads/156a0073-2383-4ec7-996c-d06fd8590f93.png",
+        "/lovable-uploads/b8562a26-74d6-41f4-8731-1c61a8e62388.png",
+        "/lovable-uploads/665b952b-a25d-4caa-93e5-a69adea20e60.png"
+      ],
+      price: 18
     },
     {
+      id: "100w-hub-charger",
       title: "🌐 100W 4-Port USB Hub Charger",
       prices: "$25",
       subtitle: "Ports: 2x USB-C + 2x USB-A",
@@ -64,14 +92,106 @@ const Shop = () => {
         "/lovable-uploads/6d3954e7-3b6f-464c-8fcf-c4450ff557d1.png",
         "/lovable-uploads/48dde519-2a04-4985-9566-601400e3281a.png",
         "/lovable-uploads/c2e7c1bd-822f-4754-b337-61ecdeb81288.png"
-      ]
+      ],
+      price: 25
     }
   ];
 
-  const handleAddToCart = (productTitle: string) => {
-    console.log("Adding to cart:", productTitle);
-    // Navigate to cart page for now
+  const addToCart = (product: typeof products[0]) => {
+    setCart(prevCart => {
+      const existingItem = prevCart.find(item => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map(item =>
+          item.id === product.id
+            ? { ...item, qty: item.qty + 1 }
+            : item
+        );
+      }
+      return [...prevCart, {
+        id: product.id,
+        name: product.title,
+        price: product.price,
+        qty: 1
+      }];
+    });
+  };
+
+  const handleAddToCart = (product: typeof products[0]) => {
+    console.log("Adding to cart:", product.title);
+    addToCart(product);
+    // Store cart in localStorage for persistence
+    const updatedCart = [...cart];
+    const existingItemIndex = updatedCart.findIndex(item => item.id === product.id);
+    if (existingItemIndex >= 0) {
+      updatedCart[existingItemIndex].qty += 1;
+    } else {
+      updatedCart.push({
+        id: product.id,
+        name: product.title,
+        price: product.price,
+        qty: 1
+      });
+    }
+    localStorage.setItem('reaper-cart', JSON.stringify(updatedCart));
+  };
+
+  const handleGoToCart = () => {
+    // Store current cart in localStorage before navigating
+    localStorage.setItem('reaper-cart', JSON.stringify(cart));
     window.location.href = '/cart';
+  };
+
+  const ImageGallery = ({ images, title }: { images: string[], title: string }) => {
+    if (images.length === 0) return null;
+
+    return (
+      <div className="mb-4">
+        <Dialog>
+          <DialogTrigger asChild>
+            <img 
+              src={images[0]} 
+              alt={title}
+              className="w-full h-48 object-contain bg-white rounded-lg mb-2 cursor-pointer hover:scale-105 transition-transform duration-200"
+            />
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {images.map((image, index) => (
+                <img 
+                  key={index}
+                  src={image} 
+                  alt={`${title} - Image ${index + 1}`}
+                  className="w-full h-auto object-contain bg-white rounded-lg"
+                />
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+        
+        {images.length > 1 && (
+          <div className="flex space-x-2 overflow-x-auto">
+            {images.slice(1).map((image, imgIndex) => (
+              <Dialog key={imgIndex}>
+                <DialogTrigger asChild>
+                  <img 
+                    src={image} 
+                    alt={`${title} - ${imgIndex + 2}`}
+                    className="w-16 h-16 object-contain bg-white rounded flex-shrink-0 cursor-pointer hover:scale-110 transition-transform duration-200"
+                  />
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <img 
+                    src={image} 
+                    alt={`${title} - Image ${imgIndex + 2}`}
+                    className="w-full h-auto object-contain bg-white rounded-lg"
+                  />
+                </DialogContent>
+              </Dialog>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -87,6 +207,20 @@ const Shop = () => {
           <p className="text-lg text-gray-400 max-w-3xl mx-auto">
             These tools aren't just cables or chargers — they're lifelines for creators, travelers, late-night coders, and the broken-but-building.
           </p>
+          
+          {cart.length > 0 && (
+            <div className="mt-8 p-4 bg-gray-900 rounded-lg border border-cyan-500">
+              <p className="text-cyan-400 font-mono mb-2">
+                Cart: {cart.reduce((total, item) => total + item.qty, 0)} items
+              </p>
+              <Button 
+                onClick={handleGoToCart}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-mono"
+              >
+                View Cart & Checkout
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
@@ -103,32 +237,12 @@ const Shop = () => {
                 <p className="text-cyan-300 font-mono text-sm italic">{product.style}</p>
               </CardHeader>
               <CardContent>
-                {product.images.length > 0 && (
-                  <div className="mb-4">
-                    <img 
-                      src={product.images[0]} 
-                      alt={product.title}
-                      className="w-full h-48 object-contain bg-white rounded-lg mb-2"
-                    />
-                    {product.images.length > 1 && (
-                      <div className="flex space-x-2 overflow-x-auto">
-                        {product.images.slice(1).map((image, imgIndex) => (
-                          <img 
-                            key={imgIndex}
-                            src={image} 
-                            alt={`${product.title} - ${imgIndex + 2}`}
-                            className="w-16 h-16 object-contain bg-white rounded flex-shrink-0"
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                <ImageGallery images={product.images} title={product.title} />
                 <p className="text-gray-300 leading-relaxed mb-4">
                   {product.description}
                 </p>
                 <Button 
-                  onClick={() => handleAddToCart(product.title)}
+                  onClick={() => handleAddToCart(product)}
                   className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
                 >
                   Add to Cart

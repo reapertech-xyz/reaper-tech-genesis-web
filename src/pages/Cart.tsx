@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2, Plus, Minus } from "lucide-react";
@@ -7,21 +7,34 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 interface CartItem {
-  id: number;
+  id: string;
   name: string;
   price: number;
   qty: number;
-  image?: string;
 }
 
 const Cart = () => {
-  const [cart, setCart] = useState<CartItem[]>([
-    { id: 1, name: "USB-C to Lightning Cable (6ft)", price: 10.00, qty: 1 },
-    { id: 2, name: "100W 4-Port USB Hub Charger", price: 25.00, qty: 1 },
-    { id: 3, name: "65W USB-C Laptop Charger Block", price: 18.00, qty: 2 },
-  ]);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
-  const updateQuantity = (id: number, change: number) => {
+  // Load cart from localStorage on component mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem('reaper-cart');
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (error) {
+        console.error('Failed to parse cart from localStorage:', error);
+        setCart([]);
+      }
+    }
+  }, []);
+
+  // Save cart to localStorage whenever cart changes
+  useEffect(() => {
+    localStorage.setItem('reaper-cart', JSON.stringify(cart));
+  }, [cart]);
+
+  const updateQuantity = (id: string, change: number) => {
     setCart(cart.map(item => 
       item.id === id 
         ? { ...item, qty: Math.max(0, item.qty + change) }
@@ -29,8 +42,13 @@ const Cart = () => {
     ).filter(item => item.qty > 0));
   };
 
-  const removeItem = (id: number) => {
+  const removeItem = (id: string) => {
     setCart(cart.filter(item => item.id !== id));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem('reaper-cart');
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -86,6 +104,17 @@ const Cart = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-mono text-cyan-400">Items in Cart</h2>
+                <Button
+                  onClick={clearCart}
+                  variant="ghost"
+                  className="text-red-400 hover:text-red-300 font-mono"
+                >
+                  Clear Cart
+                </Button>
+              </div>
+              
               {cart.map((item) => (
                 <Card key={item.id} className="bg-gray-900 border-gray-700">
                   <CardContent className="p-6">
@@ -93,6 +122,9 @@ const Cart = () => {
                       <div className="flex-1">
                         <h3 className="text-lg font-mono text-cyan-400">{item.name}</h3>
                         <p className="text-orange-500 font-bold">${item.price.toFixed(2)}</p>
+                        <p className="text-sm text-gray-400">
+                          Subtotal: ${(item.price * item.qty).toFixed(2)}
+                        </p>
                       </div>
                       
                       <div className="flex items-center space-x-4">
