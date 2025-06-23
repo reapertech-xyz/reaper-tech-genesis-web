@@ -1,34 +1,56 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import ShippingCalculator from "./ShippingCalculator";
 
 interface CheckoutSectionProps {
   total: number;
 }
 
 const CheckoutSection = ({ total }: CheckoutSectionProps) => {
+  const [shippingCost, setShippingCost] = useState(0);
+  const [taxAmount, setTaxAmount] = useState(0);
+
+  const finalTotal = total + shippingCost + taxAmount;
+
+  const handleShippingChange = (shipping: number, tax: number) => {
+    setShippingCost(shipping);
+    setTaxAmount(tax);
+  };
+
   const handleStripePayment = async () => {
-    console.log("Processing Stripe payment for amount:", total);
+    console.log("Processing Stripe payment for amount:", finalTotal);
     // TODO: Implement Stripe checkout session
-    alert("Stripe payment integration coming soon! Amount: $" + total.toFixed(2));
+    alert("Stripe payment integration coming soon! Amount: $" + finalTotal.toFixed(2));
   };
 
   const handleCryptoPayment = async () => {
-    console.log("Processing crypto payment for amount:", total);
+    console.log("Processing crypto payment for amount:", finalTotal);
     // TODO: Implement Thirdweb payment link generation
-    alert("Crypto payment via Thirdweb coming soon! Amount: $" + total.toFixed(2));
+    alert("Crypto payment via Thirdweb coming soon! Amount: $" + finalTotal.toFixed(2));
   };
 
   const handleCashPiPayment = () => {
-    alert("💰 Cash/Pi Payment Instructions:\n\nContact admin@reapertech.xyz to arrange:\n• Local meetup for cash exchange\n• Pi Network escrow transaction\n• Payment coordination\n\nTotal: $" + total.toFixed(2));
+    alert("💰 Cash/Pi Payment Instructions:\n\nContact admin@reapertech.xyz to arrange:\n• Local meetup for cash exchange\n• Pi Network escrow transaction\n• Payment coordination\n\nTotal: $" + finalTotal.toFixed(2));
   };
 
-  const handleQRPayment = () => {
-    alert("📱 QR Payment coming soon!\n\nThis will generate a QR code for:\n• Venmo/CashApp payments\n• Crypto wallet transfers\n• Pi Network transactions");
+  const handleQRPayment = async () => {
+    const receipt = `ReaperTech Order Summary:\nSubtotal: $${total.toFixed(2)}\nShipping: $${shippingCost.toFixed(2)}\nTax: $${taxAmount.toFixed(2)}\nTotal: $${finalTotal.toFixed(2)}`;
+    
+    try {
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(receipt)}`;
+      window.open(qrUrl, '_blank');
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      alert("QR code generation failed. Please try again.");
+    }
   };
 
   return (
     <div className="lg:col-span-1">
+      <ShippingCalculator subtotal={total} onShippingChange={handleShippingChange} />
+      
       <Card className="bg-gray-900 border-gray-700 sticky top-8">
         <CardHeader>
           <CardTitle className="text-cyan-400 font-mono">Order Summary</CardTitle>
@@ -40,12 +62,16 @@ const CheckoutSection = ({ total }: CheckoutSectionProps) => {
           </div>
           <div className="flex justify-between text-sm text-gray-400">
             <span>Shipping:</span>
-            <span>Calculated at checkout</span>
+            <span>${shippingCost.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-sm text-gray-400">
+            <span>Tax:</span>
+            <span>${taxAmount.toFixed(2)}</span>
           </div>
           <div className="border-t border-gray-700 pt-4">
             <div className="flex justify-between text-xl font-bold text-orange-500">
               <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
+              <span>${finalTotal.toFixed(2)}</span>
             </div>
           </div>
 

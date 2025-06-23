@@ -66,7 +66,7 @@ const Shop = () => {
     {
       id: "65w-laptop-charger",
       title: "💻 65W USB-C Laptop Charger Block",
-      prices: "$18",
+      prices: "$32.50",
       subtitle: "Single Port: USB-C PD 3.0",
       style: "For your MacBook, iPad Pro, Chromebook, Steam Deck, or anything else that breathes in watts.",
       description: "This is the block that doesn't break — small enough to pocket, powerful enough to resurrect.",
@@ -77,12 +77,12 @@ const Shop = () => {
         "/lovable-uploads/b8562a26-74d6-41f4-8731-1c61a8e62388.png",
         "/lovable-uploads/665b952b-a25d-4caa-93e5-a69adea20e60.png"
       ],
-      price: 18
+      price: 32.50
     },
     {
       id: "100w-hub-charger",
       title: "🌐 100W 4-Port USB Hub Charger",
-      prices: "$25",
+      prices: "$50.00",
       subtitle: "Ports: 2x USB-C + 2x USB-A",
       style: "Charge your world. All at once.",
       description: "Designed for desks, co-working rituals, or traveling shamans. Share the current with up to four devices — fast, safe, and without judgment.",
@@ -93,7 +93,7 @@ const Shop = () => {
         "/lovable-uploads/48dde519-2a04-4985-9566-601400e3281a.png",
         "/lovable-uploads/c2e7c1bd-822f-4754-b337-61ecdeb81288.png"
       ],
-      price: 25
+      price: 50.00
     }
   ];
 
