@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ShortcutsSection from "@/components/ShortcutsSection";
@@ -23,7 +24,6 @@ const Index = () => {
   }, []);
   return <div className="min-h-screen bg-black text-white">
             <Header title={page?.headerTitle} />
-            {page}
             <ShortcutsSection />
             <ShopSection title={page?.shop?.title} description={page?.shop?.description} />
             <Web3Section cta={page?.web3?.cta} />
