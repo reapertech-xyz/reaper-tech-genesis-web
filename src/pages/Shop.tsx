@@ -1,6 +1,6 @@
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ThiingsIcon from "@/components/ThiingsIcon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -19,7 +19,7 @@ const Shop = () => {
   const products = [
     {
       id: "usb-c-to-usb-c",
-      title: "⚡ USB-C to USB-C Cable",
+      title: <><ThiingsIcon name="usbCable" size={16} className="mr-2" />USB-C to USB-C Cable</>,
       prices: "$6 / $8 / $10",
       subtitle: "3ft / 6ft / 10ft",
       style: "Braided, Durable, PD-Ready",
@@ -29,7 +29,7 @@ const Shop = () => {
     },
     {
       id: "usb-c-to-usb-a",
-      title: "⚙️ USB-C to USB-A Cable",
+      title: <><ThiingsIcon name="cable" size={16} className="mr-2" />USB-C to USB-A Cable</>,
       prices: "$5 / $7 / $9",
       subtitle: "3ft / 6ft / 10ft",
       style: "Classic Sync & Charge",
@@ -39,7 +39,7 @@ const Shop = () => {
     },
     {
       id: "usb-c-to-lightning",
-      title: "🍎 USB-C to Lightning Cable",
+      title: <><ThiingsIcon name="phoneGradient" size={16} className="mr-2" />USB-C to Lightning Cable</>,
       prices: "$8 / $10 / $12",
       subtitle: "3ft / 6ft / 10ft",
       style: "Apple MFi Certified",
@@ -49,7 +49,7 @@ const Shop = () => {
     },
     {
       id: "20w-dual-adapter",
-      title: "🔋 20W USB-A + USB-C Wall Adapter",
+      title: <><ThiingsIcon name="wallAdapter" size={16} className="mr-2" />20W USB-A + USB-C Wall Adapter</>,
       prices: "$10",
       subtitle: "Dual Output: 1x USB-C PD + 1x USB-A QC",
       style: "Perfect power, twin-born.",
@@ -65,7 +65,7 @@ const Shop = () => {
     },
     {
       id: "65w-laptop-charger",
-      title: "💻 65W USB-C Laptop Charger Block",
+      title: <><ThiingsIcon name="charger" size={16} className="mr-2" />65W USB-C Laptop Charger Block</>,
       prices: "$32.50",
       subtitle: "Single Port: USB-C PD 3.0",
       style: "For your MacBook, iPad Pro, Chromebook, Steam Deck, or anything else that breathes in watts.",
@@ -81,7 +81,7 @@ const Shop = () => {
     },
     {
       id: "100w-hub-charger",
-      title: "🌐 100W 4-Port USB Hub Charger",
+      title: <><ThiingsIcon name="network" size={16} className="mr-2" />100W 4-Port USB Hub Charger</>,
       prices: "$50.00",
       subtitle: "Ports: 2x USB-C + 2x USB-A",
       style: "Charge your world. All at once.",
@@ -109,7 +109,7 @@ const Shop = () => {
       }
       return [...prevCart, {
         id: product.id,
-        name: product.title,
+        name: typeof product.title === 'string' ? product.title : product.id,
         price: product.price,
         qty: 1
       }];
@@ -127,7 +127,7 @@ const Shop = () => {
     } else {
       updatedCart.push({
         id: product.id,
-        name: product.title,
+        name: typeof product.title === 'string' ? product.title : product.id,
         price: product.price,
         qty: 1
       });
@@ -200,8 +200,9 @@ const Shop = () => {
       
       <main className="px-6 py-16 max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold font-mono text-cyan-400 mb-8">
-            🛒 The Reaper's Cache
+          <h1 className="text-4xl md:text-5xl font-bold font-mono text-cyan-400 mb-8 flex items-center justify-center">
+            <ThiingsIcon name="reaperHood" size={32} className="mr-3" />
+            The Reaper's Cache
           </h1>
           <p className="text-xl text-gray-300 mb-4">Where every connection matters.</p>
           <p className="text-lg text-gray-400 max-w-3xl mx-auto">
@@ -237,7 +238,7 @@ const Shop = () => {
                 <p className="text-cyan-300 font-mono text-sm italic">{product.style}</p>
               </CardHeader>
               <CardContent>
-                <ImageGallery images={product.images} title={product.title} />
+                <ImageGallery images={product.images} title={typeof product.title === 'string' ? product.title : 'Product'} />
                 <p className="text-gray-300 leading-relaxed mb-4">
                   {product.description}
                 </p>
@@ -253,31 +254,33 @@ const Shop = () => {
         </div>
 
         <div className="border-t border-gray-700 pt-12">
-          <h2 className="text-3xl font-bold font-mono text-cyan-400 mb-8 text-center">
-            🛠️ Warranty, Vibes, & Pi
+          <h2 className="text-3xl font-bold font-mono text-cyan-400 mb-8 text-center flex items-center justify-center">
+            <ThiingsIcon name="datacenter" size={24} className="mr-3" />
+            Warranty, Vibes, & Pi
           </h2>
           
           <div className="bg-gray-900 p-8 rounded-lg border border-gray-700">
             <p className="text-lg mb-6">Every item is:</p>
             <ul className="space-y-3 text-gray-300">
               <li className="flex items-center space-x-3">
-                <span className="text-cyan-400">🔄</span>
+                <ThiingsIcon name="reaperHood" size={16} />
                 <span>Backed by a 30-day No-Bull Warranty</span>
               </li>
               <li className="flex items-center space-x-3">
-                <span className="text-cyan-400">💰</span>
+                <ThiingsIcon name="blockchain" size={16} />
                 <span>Accepting cash, card, and Pi Network Coin</span>
               </li>
               <li className="flex items-center space-x-3">
-                <span className="text-cyan-400">🖤</span>
+                <ThiingsIcon name="bolt" size={16} />
                 <span>Packed with intention and handled with care</span>
               </li>
             </ul>
           </div>
           
           <div className="text-center mt-8">
-            <p className="text-gray-400">
-              📦 Shipping available locally or via drop. Message to barter, bundle, or ask if the spirits recommend USB-C today.
+            <p className="text-gray-400 flex items-center justify-center">
+              <ThiingsIcon name="delivery" size={16} className="mr-2" />
+              Shipping available locally or via drop. Message to barter, bundle, or ask if the spirits recommend USB-C today.
             </p>
           </div>
         </div>
