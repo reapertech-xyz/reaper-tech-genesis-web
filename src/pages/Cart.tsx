@@ -16,7 +16,7 @@ const Cart = () => {
       <main className="px-6 py-16 max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold font-mono text-cyan-400 mb-4">
-            🛒 Your Cart
+            Your Cart
           </h1>
           <p className="text-lg text-gray-400">
             You're not just buying tech — you're investing in legacy tools.
@@ -36,7 +36,7 @@ const Cart = () => {
               removeItem={removeItem}
               clearCart={clearCart}
             />
-            <CheckoutSection total={total} />
+            <CheckoutSection total={total} cart={cart} />
           </div>
         )}
       </main>

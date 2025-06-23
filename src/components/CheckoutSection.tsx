@@ -6,9 +6,15 @@ import ShippingCalculator from "./ShippingCalculator";
 
 interface CheckoutSectionProps {
   total: number;
+  cart: Array<{
+    id: string;
+    name: string;
+    price: number;
+    qty: number;
+  }>;
 }
 
-const CheckoutSection = ({ total }: CheckoutSectionProps) => {
+const CheckoutSection = ({ total, cart }: CheckoutSectionProps) => {
   const [shippingCost, setShippingCost] = useState(0);
   const [taxAmount, setTaxAmount] = useState(0);
 
@@ -32,7 +38,7 @@ const CheckoutSection = ({ total }: CheckoutSectionProps) => {
   };
 
   const handleCashPiPayment = () => {
-    alert("💰 Cash/Pi Payment Instructions:\n\nContact admin@reapertech.xyz to arrange:\n• Local meetup for cash exchange\n• Pi Network escrow transaction\n• Payment coordination\n\nTotal: $" + finalTotal.toFixed(2));
+    alert("Cash/Pi Payment Instructions:\n\nContact admin@reapertech.xyz to arrange:\n• Local meetup for cash exchange\n• Pi Network escrow transaction\n• Payment coordination\n\nTotal: $" + finalTotal.toFixed(2));
   };
 
   const handleQRPayment = async () => {
@@ -49,7 +55,7 @@ const CheckoutSection = ({ total }: CheckoutSectionProps) => {
 
   return (
     <div className="lg:col-span-1">
-      <ShippingCalculator subtotal={total} onShippingChange={handleShippingChange} />
+      <ShippingCalculator subtotal={total} cart={cart} onShippingChange={handleShippingChange} />
       
       <Card className="bg-gray-900 border-gray-700 sticky top-8">
         <CardHeader>
@@ -57,7 +63,7 @@ const CheckoutSection = ({ total }: CheckoutSectionProps) => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between text-lg">
-            <span>Subtotal:</span>
+            <span className="text-orange-400">Subtotal:</span>
             <span>${total.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm text-gray-400">
@@ -80,7 +86,7 @@ const CheckoutSection = ({ total }: CheckoutSectionProps) => {
               onClick={handleStripePayment}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-mono"
             >
-              💳 Pay with Card (Stripe)
+              Pay with Card (Stripe)
             </Button>
             
             <Button 
@@ -88,7 +94,7 @@ const CheckoutSection = ({ total }: CheckoutSectionProps) => {
               variant="outline" 
               className="w-full border-orange-500 text-orange-500 hover:bg-orange-500/10 font-mono"
             >
-              🚀 Pay with Crypto
+              Pay with Crypto
             </Button>
             
             <Button 
@@ -96,7 +102,7 @@ const CheckoutSection = ({ total }: CheckoutSectionProps) => {
               variant="ghost" 
               className="w-full text-cyan-400 hover:bg-cyan-400/10 font-mono"
             >
-              💰 Cash / Pi Network
+              Cash / Pi Network
             </Button>
             
             <Button 
@@ -104,7 +110,7 @@ const CheckoutSection = ({ total }: CheckoutSectionProps) => {
               variant="secondary" 
               className="w-full bg-gray-700 hover:bg-gray-600 font-mono"
             >
-              📱 Generate Payment QR
+              Generate Payment QR
             </Button>
           </div>
 

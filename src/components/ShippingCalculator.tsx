@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface ShippingCalculatorProps {
   subtotal: number;
+  cart: Array<{
+    id: string;
+    name: string;
+    price: number;
+    qty: number;
+  }>;
   onShippingChange: (shipping: number, tax: number) => void;
 }
 
@@ -32,23 +38,48 @@ const SHIPPING_RATES = {
   'UPS_3Day': { base: 12.95, perLb: 2.25, name: 'UPS 3-Day' },
   'FedEx_Ground': { base: 8.45, perLb: 1.35, name: 'FedEx Ground' },
   'FedEx_Express': { base: 15.95, perLb: 2.85, name: 'FedEx Express' },
-  'Amazon_Standard': { base: 5.99, perLb: 0.99, name: 'Amazon Standard' },
-  'Amazon_Prime': { base: 0.00, perLb: 0.00, name: 'Amazon Prime (Free)' }
+  'Amazon_Standard': { base: 4.50, perLb: 0.99, name: 'Amazon Standard' }
 };
 
-const ShippingCalculator = ({ subtotal, onShippingChange }: ShippingCalculatorProps) => {
+// Product weight mapping
+const PRODUCT_WEIGHTS = {
+  '20w-dual-adapter': 0.25,
+  '65w-laptop-charger': 0.45,
+  '100w-hub-charger': 0.55,
+  // Cable weights by length (default to 6ft if not specified)
+  'usb-c-to-usb-c': 0.18,
+  'usb-c-to-usb-a': 0.18,
+  'usb-c-to-lightning': 0.18
+};
+
+const ShippingCalculator = ({ subtotal, cart, onShippingChange }: ShippingCalculatorProps) => {
   const [zipCode, setZipCode] = useState("");
   const [state, setState] = useState("");
   const [shippingMethod, setShippingMethod] = useState("");
-  const [weight, setWeight] = useState(1); // Default 1 lb
   const [shippingCost, setShippingCost] = useState(0);
   const [taxAmount, setTaxAmount] = useState(0);
+
+  // Calculate total weight from cart items
+  const calculateTotalWeight = () => {
+    return cart.reduce((totalWeight, item) => {
+      const baseWeight = PRODUCT_WEIGHTS[item.id as keyof typeof PRODUCT_WEIGHTS] || 0.18;
+      return totalWeight + (baseWeight * item.qty);
+    }, 0);
+  };
+
+  const totalWeight = calculateTotalWeight();
 
   const calculateShipping = () => {
     if (!shippingMethod || !state) return;
 
-    const carrier = SHIPPING_RATES[shippingMethod as keyof typeof SHIPPING_RATES];
-    const shipping = carrier.base + (carrier.perLb * weight);
+    // Check for free shipping conditions
+    const qualifiesForFreeShipping = totalWeight >= 35 || subtotal >= 85;
+    
+    let shipping = 0;
+    if (!qualifiesForFreeShipping) {
+      const carrier = SHIPPING_RATES[shippingMethod as keyof typeof SHIPPING_RATES];
+      shipping = carrier.base + (carrier.perLb * totalWeight);
+    }
     
     const taxRate = STATE_TAX_RATES[state as keyof typeof STATE_TAX_RATES] || 0;
     const tax = subtotal * taxRate;
@@ -58,12 +89,33 @@ const ShippingCalculator = ({ subtotal, onShippingChange }: ShippingCalculatorPr
     onShippingChange(shipping, tax);
   };
 
+  // Auto-calculate when dependencies change
+  useEffect(() => {
+    if (state && shippingMethod) {
+      calculateShipping();
+    }
+  }, [state, shippingMethod, totalWeight, subtotal]);
+
+  const qualifiesForFreeShipping = totalWeight >= 35 || subtotal >= 85;
+
   return (
     <Card className="bg-gray-900 border-gray-700 mb-4">
       <CardHeader>
         <CardTitle className="text-cyan-400 font-mono">Shipping & Tax Calculator</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="bg-gray-800 p-3 rounded border border-gray-600">
+          <div className="flex justify-between text-sm mb-2">
+            <span className="text-gray-400">Package Weight:</span>
+            <span className="text-green-400">{totalWeight.toFixed(2)} lbs</span>
+          </div>
+          {qualifiesForFreeShipping && (
+            <div className="text-green-400 text-sm font-mono">
+              ✓ Qualifies for FREE shipping! ({totalWeight >= 35 ? 'Weight' : 'Price'} threshold met)
+            </div>
+          )}
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="zipCode" className="text-gray-300">ZIP Code</Label>
@@ -93,19 +145,6 @@ const ShippingCalculator = ({ subtotal, onShippingChange }: ShippingCalculatorPr
         </div>
 
         <div>
-          <Label htmlFor="weight" className="text-gray-300">Package Weight (lbs)</Label>
-          <Input
-            id="weight"
-            type="number"
-            value={weight}
-            onChange={(e) => setWeight(parseFloat(e.target.value) || 1)}
-            min="0.1"
-            step="0.1"
-            className="bg-gray-800 border-gray-600 text-white"
-          />
-        </div>
-
-        <div>
           <Label htmlFor="shipping" className="text-gray-300">Shipping Method</Label>
           <Select value={shippingMethod} onValueChange={setShippingMethod}>
             <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
@@ -115,25 +154,20 @@ const ShippingCalculator = ({ subtotal, onShippingChange }: ShippingCalculatorPr
               {Object.entries(SHIPPING_RATES).map(([key, carrier]) => (
                 <SelectItem key={key} value={key} className="text-white">
                   {carrier.name} - ${carrier.base.toFixed(2)} + ${carrier.perLb.toFixed(2)}/lb
+                  {qualifiesForFreeShipping && <span className="text-green-400 ml-2">(FREE)</span>}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        <Button 
-          onClick={calculateShipping}
-          className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
-          disabled={!state || !shippingMethod}
-        >
-          Calculate Shipping & Tax
-        </Button>
-
-        {(shippingCost > 0 || taxAmount > 0) && (
+        {(shippingCost >= 0 || taxAmount > 0) && state && shippingMethod && (
           <div className="pt-4 border-t border-gray-700 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Shipping:</span>
-              <span className="text-green-400">${shippingCost.toFixed(2)}</span>
+              <span className="text-green-400">
+                {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
+              </span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Tax ({state}):</span>
