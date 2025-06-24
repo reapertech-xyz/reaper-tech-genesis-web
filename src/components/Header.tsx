@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import ThiingsIcon from "./ThiingsIcon";
-import { user as userIcon, log-out } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 
 interface HeaderProps {
   title: string;
@@ -57,7 +57,7 @@ const Header = ({ title }: HeaderProps) => {
                 size="sm"
                 className="text-gray-400 hover:text-red-400"
               >
-                <log-out className="h-4 w-4" />
+                <LogOut className="h-4 w-4" />
               </Button>
             </div>
           ) : (
@@ -67,7 +67,7 @@ const Header = ({ title }: HeaderProps) => {
               className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/10"
             >
               <Link to="/auth">
-                <userIcon className="h-4 w-4 mr-2" />
+                <User className="h-4 w-4 mr-2" />
                 Sign In
               </Link>
             </Button>
