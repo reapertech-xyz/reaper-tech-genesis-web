@@ -8,7 +8,7 @@ import ThiingsIcon from '@/components/ThiingsIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 interface BookmarkedShortcut {
   id: string;
@@ -119,7 +119,7 @@ const Bookmarks = () => {
                       onClick={() => deleteBookmark(bookmark.id)}
                       className="text-red-400 hover:text-red-300 p-1"
                     >
-                      <trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                   {bookmark.category && (

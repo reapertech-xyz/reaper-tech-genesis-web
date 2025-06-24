@@ -67,7 +67,7 @@ export const useCart = () => {
         .from('saved_carts')
         .upsert({
           user_id: user.id,
-          cart_data: cartData,
+          cart_data: cartData as any,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id'

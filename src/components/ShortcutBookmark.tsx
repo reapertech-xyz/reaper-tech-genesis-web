@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { bookmark } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 
 interface ShortcutBookmarkProps {
   title?: string;
@@ -88,7 +88,7 @@ const ShortcutBookmark = ({ title = '', description = '', downloadLink = '', sha
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="text-cyan-400 border-cyan-400 hover:bg-cyan-400/10">
-          <bookmark className="h-4 w-4 mr-2" />
+          <Bookmark className="h-4 w-4 mr-2" />
           Bookmark
         </Button>
       </DialogTrigger>
