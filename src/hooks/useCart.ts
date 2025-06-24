@@ -28,7 +28,7 @@ export const useCart = () => {
           .maybeSingle();
 
         if (data && !error) {
-          setCart(data.cart_data as CartItem[]);
+          setCart(data.cart_data as unknown as CartItem[]);
         } else {
           // Migration: load from localStorage and save to Supabase
           const savedCart = localStorage.getItem('reaper-cart');
