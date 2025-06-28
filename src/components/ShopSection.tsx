@@ -22,9 +22,7 @@ const ShopSection = ({
               {description || "Discover a wide range of products, including charging adapters, durable cables, high-quality screen protectors, and more."}
             </p>
 
-            <p className="text-2xl text-gray-200">
-              Enjoy secure payments with Pi Network through trusted Escrow services, ensuring a smooth and protected shopping experience.
-            </p>
+            <p className="text-2xl text-gray-200">Enjoy secure payments via Stripe, Web3 wallets, and even with Pi Network (through trusted Escrow service: &lt;link rel=&quot;icon&quot; href=&quot;Coinskro.com&quot; /&gt;) , ensuring a smooth and protected shopping experience.</p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link to="/shop">
