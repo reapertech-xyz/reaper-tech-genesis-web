@@ -1,10 +1,13 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
-const ShopSection = ({ title, description }: { title?: string; description?: string }) => {
-  return (
-    <section className="bg-gray-900 text-white py-16 md:py-24 px-6">
+const ShopSection = ({
+  title,
+  description
+}: {
+  title?: string;
+  description?: string;
+}) => {
+  return <section className="bg-gray-900 text-white py-16 md:py-24 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
@@ -13,9 +16,7 @@ const ShopSection = ({ title, description }: { title?: string; description?: str
               {title || "Coming Soon: New Shop + Payments via Pi Network!"}
             </h2>
             
-            <p className="text-2xl text-gray-200">
-              Your one-stop shop for premium electronics accessories & servicing is coming soon!
-            </p>
+            <p className="text-2xl text-gray-200">Your one-stop shop for premium electronics accessories &amp; servicing is now here!</p>
 
             <p className="text-2xl text-gray-200">
               {description || "Discover a wide range of products, including charging adapters, durable cables, high-quality screen protectors, and more."}
@@ -48,8 +49,6 @@ const ShopSection = ({ title, description }: { title?: string; description?: str
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default ShopSection;
