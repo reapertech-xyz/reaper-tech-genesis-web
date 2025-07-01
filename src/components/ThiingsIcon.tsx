@@ -1,3 +1,4 @@
+
 interface ThiingsIconProps {
   name: string;
   className?: string;
@@ -17,8 +18,6 @@ const ThiingsIcon = ({ name, className = "", size = 24 }: ThiingsIconProps) => {
     wifi: "/lovable-uploads/8c78d661-e33d-4284-93c9-3e1df8015e54.png",
     delivery: "/lovable-uploads/82638358-fa89-4121-9e3d-b6a0778be47d.png",
     laptop: "/lovable-uploads/3470e7ce-e63c-44cd-8fc3-ff741c77075a.png",
-
-    // New icons from latest upload
     serverRack: "/lovable-uploads/59e25f0a-2853-4447-bce5-3f4c193b0af1.png",
     hardDrive: "/lovable-uploads/d58b2aad-a3c0-4c35-bf62-b7b7b9632189.png",
     gameController: "/lovable-uploads/bd222062-3e34-4686-9281-e8f428f4c6df.png",
@@ -28,7 +27,19 @@ const ThiingsIcon = ({ name, className = "", size = 24 }: ThiingsIconProps) => {
     usb: "/lovable-uploads/48dde519-2a04-4985-9566-601400e3281a.png",
     smartphone: "/lovable-uploads/c2e7c1bd-822f-4754-b337-61ecdeb81288.png",
     tablet: "/lovable-uploads/586974d3-9173-427d-9ae7-17e13e0378fe.png",
-    networkCard: "/lovable-uploads/31e6b38f-96a0-4276-b51c-1bf8efe11f45.png"
+    networkCard: "/lovable-uploads/31e6b38f-96a0-4276-b51c-1bf8efe11f45.png",
+
+    // New 3D icons from latest upload
+    blackCat: "/lovable-uploads/ae98f2e1-c4ac-4244-824c-6f7be3db3c82.png",
+    blueCatHeart: "/lovable-uploads/19c53b07-6d4e-4e78-9b18-f6ba9b82d686.png",
+    orangeCatTech: "/lovable-uploads/d7e41bd1-fe5a-4b1c-a1ac-c1cdbdc2d6a3.png",
+    greenCatMatrix: "/lovable-uploads/67ed3b60-3df4-4ad4-b37e-34b51659f9b2.png",
+    purpleCatMystic: "/lovable-uploads/8e3b2b98-d82b-4d5f-9b1d-5e3a7c9d2f8e.png",
+    redCatFire: "/lovable-uploads/f4c8a7d6-2e9b-4f1c-8d3a-6b5e9c8d7a2f.png",
+    yellowCatSun: "/lovable-uploads/b9d5c2a8-7f3e-4b1c-9a6d-8e4f2c1b9a5e.png",
+    whiteCatCloud: "/lovable-uploads/c8b7a9d6-4e2f-4a1c-8b5d-7e3c9f8d2a6b.png",
+    grayCatStorm: "/lovable-uploads/a5d8c7b6-9e4f-4c2a-8d6b-3f7e8c9d5a2b.png",
+    rainbowCatPrism: "/lovable-uploads/e7f9c8d5-2a6b-4e3c-9d8a-6b4f7e2c8d9a.png"
   };
 
   const iconSrc = iconMap[name];

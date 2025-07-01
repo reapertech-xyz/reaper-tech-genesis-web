@@ -34,8 +34,10 @@ const Index = () => {
       {/* Hero Section */}
       <section className="bg-black text-white py-16 md:py-24 px-6">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center items-center mb-8 space-x-8">
+            <ThiingsIcon name="blackCat" size={100} className="animate-pulse" />
             <ThiingsIcon name="reaperHood" size={120} />
+            <ThiingsIcon name="purpleCatMystic" size={100} className="animate-pulse" />
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold font-mono mb-6">
