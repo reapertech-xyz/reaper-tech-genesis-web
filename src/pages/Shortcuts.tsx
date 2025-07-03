@@ -54,13 +54,22 @@ const Shortcuts = () => {
       <main className="px-6 py-16 max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold font-mono text-cyan-400 mb-8 flex items-center justify-center">
-            <ThiingsIcon name="foldablePhone" size={40} className="mr-3" />
+            <ThiingsIcon name="smartphone3D" size={40} className="mr-3" />
             Reaper Tech iOS Shortcuts Gallery
           </h1>
           <div className="space-y-4 text-lg">
-            <p className="text-orange-500 font-bold">Lightweight. Lethal. Lantern-born.</p>
-            <p className="text-gray-300">Built to bend your Apple device to your will.</p>
-            <p className="text-gray-400">Automations that aren't just smart — they're soulful.</p>
+            <p className="text-orange-500 font-bold flex items-center justify-center">
+              <ThiingsIcon name="lightning3D" size={20} className="mr-2" />
+              Lightweight. Lethal. Lantern-born.
+            </p>
+            <p className="text-gray-300 flex items-center justify-center">
+              <ThiingsIcon name="gear3D" size={20} className="mr-2" />
+              Built to bend your Apple device to your will.
+            </p>
+            <p className="text-gray-400 flex items-center justify-center">
+              <ThiingsIcon name="heart3D" size={20} className="mr-2" />
+              Automations that aren't just smart — they're soulful.
+            </p>
           </div>
         </div>
 
@@ -71,9 +80,9 @@ const Shortcuts = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-cyan-400 font-mono text-xl flex items-center">
-                      <ThiingsIcon name="robotHead" size={20} className="mr-2" />
+                      <ThiingsIcon name="brain3D" size={20} className="mr-2" />
                       {shortcut.title}
-                      <ThiingsIcon name="datacenter" size={20} className="ml-2" />
+                      <ThiingsIcon name="computer3D" size={20} className="ml-2" />
                     </CardTitle>
                     <CardDescription className="text-orange-500 font-bold text-lg italic">
                       "{shortcut.subtitle}"
@@ -106,14 +115,17 @@ const Shortcuts = () => {
 
         <div className="border-t border-gray-700 pt-12">
           <h2 className="text-3xl font-bold font-mono text-cyan-400 mb-8 flex items-center justify-center">
-            <ThiingsIcon name="wifi" size={28} className="mr-3" />
+            <ThiingsIcon name="folder3D" size={28} className="mr-3" />
             Also Available in the Gallery:
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {otherShortcuts.map((shortcut, index) => (
               <div key={index} className="bg-gray-900 p-4 rounded-lg border border-gray-700 hover:border-cyan-500 transition-colors">
-                <p className="text-gray-300 font-mono">{shortcut}</p>
+                <p className="text-gray-300 font-mono flex items-center">
+                  <ThiingsIcon name="star3D" size={16} className="mr-2" />
+                  {shortcut}
+                </p>
               </div>
             ))}
           </div>
@@ -121,18 +133,21 @@ const Shortcuts = () => {
 
         <div className="border-t border-gray-700 pt-12 text-center">
           <p className="text-lg text-gray-300 mb-4 flex items-center justify-center">
-            <ThiingsIcon name="bolt" size={20} className="mr-2" />
+            <ThiingsIcon name="lightning3D" size={20} className="mr-2" />
             All shortcuts run on macOS + iOS. Many support Share Sheet, Quick Actions, and Home Screen integrations.
           </p>
           
           <div className="bg-gray-900 p-8 rounded-lg border border-gray-700 mt-8">
             <h3 className="text-2xl font-bold font-mono text-cyan-400 mb-4 flex items-center justify-center">
-              <ThiingsIcon name="reaperHood" size={24} className="mr-2" />
+              <ThiingsIcon name="crown3D" size={24} className="mr-2" />
               Reaper Tech Shortcuts
             </h3>
-            <p className="text-lg text-orange-500 mb-2">Shareable. Hackable. Ritual-ready.</p>
+            <p className="text-lg text-orange-500 mb-2 flex items-center justify-center">
+              <ThiingsIcon name="diamond3D" size={20} className="mr-2" />
+              Shareable. Hackable. Ritual-ready.
+            </p>
             <p className="text-gray-400 italic flex items-center justify-center">
-              <ThiingsIcon name="datacenter" size={20} className="mr-2" />
+              <ThiingsIcon name="magic3D" size={20} className="mr-2" />
               "Smarter not just by function — but by feeling."
             </p>
           </div>

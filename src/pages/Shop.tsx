@@ -39,7 +39,7 @@ const Shop = () => {
     },
     {
       id: "usb-c-to-lightning",
-      title: <><ThiingsIcon name="phoneGradient" size={16} className="mr-2" />USB-C to Lightning Cable</>,
+      title: <><ThiingsIcon name="smartphone3D" size={16} className="mr-2" />USB-C to Lightning Cable</>,
       prices: "$8 / $10 / $12",
       subtitle: "3ft / 6ft / 10ft",
       style: "Apple MFi Certified",
@@ -49,7 +49,7 @@ const Shop = () => {
     },
     {
       id: "20w-dual-adapter",
-      title: <><ThiingsIcon name="wallAdapter" size={16} className="mr-2" />20W USB-A + USB-C Wall Adapter</>,
+      title: <><ThiingsIcon name="plug3D" size={16} className="mr-2" />20W USB-A + USB-C Wall Adapter</>,
       prices: "$10",
       subtitle: "Dual Output: 1x USB-C PD + 1x USB-A QC",
       style: "Perfect power, twin-born.",
@@ -201,17 +201,21 @@ const Shop = () => {
       <main className="px-6 py-16 max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold font-mono text-cyan-400 mb-8 flex items-center justify-center">
-            <ThiingsIcon name="reaperHood" size={32} className="mr-3" />
+            <ThiingsIcon name="skull3D" size={32} className="mr-3" />
             The Reaper's Cache
           </h1>
-          <p className="text-xl text-gray-300 mb-4">Where every connection matters.</p>
+          <p className="text-xl text-gray-300 mb-4 flex items-center justify-center">
+            <ThiingsIcon name="gem3D" size={20} className="mr-2" />
+            Where every connection matters.
+          </p>
           <p className="text-lg text-gray-400 max-w-3xl mx-auto">
             These tools aren't just cables or chargers — they're lifelines for creators, travelers, late-night coders, and the broken-but-building.
           </p>
           
           {cart.length > 0 && (
             <div className="mt-8 p-4 bg-gray-900 rounded-lg border border-cyan-500">
-              <p className="text-cyan-400 font-mono mb-2">
+              <p className="text-cyan-400 font-mono mb-2 flex items-center justify-center">
+                <ThiingsIcon name="box3D" size={20} className="mr-2" />
                 Cart: {cart.reduce((total, item) => total + item.qty, 0)} items
               </p>
               <Button 
@@ -255,23 +259,26 @@ const Shop = () => {
 
         <div className="border-t border-gray-700 pt-12">
           <h2 className="text-3xl font-bold font-mono text-cyan-400 mb-8 text-center flex items-center justify-center">
-            <ThiingsIcon name="datacenter" size={24} className="mr-3" />
+            <ThiingsIcon name="shield3D" size={24} className="mr-3" />
             Warranty, Vibes, & Pi
           </h2>
           
           <div className="bg-gray-900 p-8 rounded-lg border border-gray-700">
-            <p className="text-lg mb-6">Every item is:</p>
+            <p className="text-lg mb-6 flex items-center">
+              <ThiingsIcon name="crown3D" size={20} className="mr-2" />
+              Every item is:
+            </p>
             <ul className="space-y-3 text-gray-300">
               <li className="flex items-center space-x-3">
-                <ThiingsIcon name="reaperHood" size={16} />
+                <ThiingsIcon name="shield3D" size={16} />
                 <span>Backed by a 30-day No-Bull Warranty</span>
               </li>
               <li className="flex items-center space-x-3">
-                <ThiingsIcon name="blockchain" size={16} />
+                <ThiingsIcon name="coin3D" size={16} />
                 <span>Accepting cash, card, and Pi Network Coin</span>
               </li>
               <li className="flex items-center space-x-3">
-                <ThiingsIcon name="bolt" size={16} />
+                <ThiingsIcon name="lightning3D" size={16} />
                 <span>Packed with intention and handled with care</span>
               </li>
             </ul>
@@ -279,7 +286,7 @@ const Shop = () => {
           
           <div className="text-center mt-8">
             <p className="text-gray-400 flex items-center justify-center">
-              <ThiingsIcon name="delivery" size={16} className="mr-2" />
+              <ThiingsIcon name="truck3D" size={16} className="mr-2" />
               Shipping available locally or via drop. Message to barter, bundle, or ask if the spirits recommend USB-C today.
             </p>
           </div>
