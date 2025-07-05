@@ -1,62 +1,28 @@
 
 import { useState } from "react";
+import { useAddress, useConnect, useDisconnect, ConnectWallet, useConnectionStatus } from "@thirdweb-dev/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ThiingsIcon from "./ThiingsIcon";
+import { toast } from "sonner";
 
 const Web3WalletConnect = () => {
-  const [isConnected, setIsConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
-  const [isConnecting, setIsConnecting] = useState(false);
+  const address = useAddress();
+  const connectionStatus = useConnectionStatus();
+  const disconnect = useDisconnect();
 
-  const walletOptions = [
-    {
-      name: "MetaMask",
-      icon: "wallet3D",
-      description: "Connect using MetaMask browser extension",
-      color: "bg-orange-500 hover:bg-orange-600"
-    },
-    {
-      name: "WalletConnect",
-      icon: "phone3D",
-      description: "Connect using WalletConnect protocol",
-      color: "bg-blue-500 hover:bg-blue-600"
-    },
-    {
-      name: "Coinbase Wallet",
-      icon: "coin3D",
-      description: "Connect using Coinbase Wallet",
-      color: "bg-cyan-500 hover:bg-cyan-600"
-    },
-    {
-      name: "Pi Network",
-      icon: "pizza3D",
-      description: "Connect using Pi Network (Coming Soon)",
-      color: "bg-purple-500 hover:bg-purple-600",
-      disabled: true
+  const handleDisconnect = async () => {
+    try {
+      await disconnect();
+      toast.success("Wallet disconnected successfully");
+    } catch (error) {
+      toast.error("Failed to disconnect wallet");
+      console.error("Disconnect error:", error);
     }
-  ];
-
-  const handleConnect = async (walletName: string) => {
-    if (walletName === "Pi Network") return; // Coming soon
-    
-    setIsConnecting(true);
-    
-    // Simulate wallet connection
-    setTimeout(() => {
-      setIsConnected(true);
-      setWalletAddress("0x742d35Cc6634C0532925a3b8D4631d3d");
-      setIsConnecting(false);
-    }, 2000);
   };
 
-  const handleDisconnect = () => {
-    setIsConnected(false);
-    setWalletAddress("");
-  };
-
-  if (isConnected) {
+  if (address && connectionStatus === "connected") {
     return (
       <Card className="bg-gray-900 border-gray-700">
         <CardHeader>
@@ -65,7 +31,7 @@ const Web3WalletConnect = () => {
             Wallet Connected
           </CardTitle>
           <CardDescription className="text-gray-300">
-            {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+            {address.slice(0, 6)}...{address.slice(-4)}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -89,54 +55,31 @@ const Web3WalletConnect = () => {
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="bg-purple-500 hover:bg-purple-600 text-white font-mono flex items-center">
-          <ThiingsIcon name="wallet3D" size={20} className="mr-2" />
-          Connect Wallet
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="bg-gray-900 border-gray-700 text-white">
-        <DialogHeader>
-          <DialogTitle className="text-cyan-400 font-mono flex items-center">
-            <ThiingsIcon name="key3D" size={24} className="mr-2" />
-            Connect Your Web3 Wallet
-          </DialogTitle>
-          <DialogDescription className="text-gray-300">
-            Choose your preferred wallet to connect to Reaper Tech
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-3">
-          {walletOptions.map((wallet, index) => (
-            <Button
-              key={index}
-              onClick={() => handleConnect(wallet.name)}
-              disabled={wallet.disabled || isConnecting}
-              className={`w-full justify-start p-4 h-auto ${wallet.color} ${wallet.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <div className="flex items-center space-x-3">
-                <ThiingsIcon name={wallet.icon} size={24} />
-                <div className="text-left">
-                  <div className="font-semibold">{wallet.name}</div>
-                  <div className="text-sm opacity-80">{wallet.description}</div>
-                </div>
-              </div>
-              {isConnecting && (
-                <ThiingsIcon name="gear3D" size={16} className="ml-auto animate-spin" />
-              )}
-            </Button>
-          ))}
-        </div>
-        
-        <div className="mt-6 p-4 bg-gray-800 rounded-lg border border-gray-600">
-          <p className="text-sm text-gray-400 flex items-center">
-            <ThiingsIcon name="shield3D" size={16} className="mr-2" />
-            Your wallet connection is secure and encrypted. We never store your private keys.
-          </p>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <div className="flex items-center">
+      <ConnectWallet 
+        theme="dark"
+        btnTitle="Connect Wallet"
+        modalTitle="Connect to Reaper Tech"
+        welcomeScreen={{
+          title: "Welcome to Reaper Tech",
+          subtitle: "Connect your wallet to access Web3 features",
+        }}
+        style={{
+          backgroundColor: "#8B5CF6",
+          color: "white",
+          fontFamily: "monospace",
+          borderRadius: "6px",
+          padding: "8px 16px",
+          fontSize: "14px",
+          fontWeight: "500",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px"
+        }}
+      />
+    </div>
   );
 };
 

@@ -7,7 +7,7 @@ interface ThiingsIconProps {
 
 const ThiingsIcon = ({ name, className = "", size = 24 }: ThiingsIconProps) => {
   const iconMap: Record<string, string> = {
-    // Existing icons
+    // Existing icons from lovable-uploads
     reaperHood: "/lovable-uploads/1d232681-b4f3-4e00-8fa3-93aeb478dee6.png",
     bolt: "/lovable-uploads/74a314ec-2755-4636-a063-5d1e955d796e.png",
     wallAdapter: "/lovable-uploads/4687d604-305c-408c-9bfc-1901697c58c3.png",
@@ -29,19 +29,7 @@ const ThiingsIcon = ({ name, className = "", size = 24 }: ThiingsIconProps) => {
     tablet: "/lovable-uploads/586974d3-9173-427d-9ae7-17e13e0378fe.png",
     networkCard: "/lovable-uploads/31e6b38f-96a0-4276-b51c-1bf8efe11f45.png",
 
-    // New 3D icons from latest upload
-    blackCat: "/lovable-uploads/ae98f2e1-c4ac-4244-824c-6f7be3db3c82.png",
-    blueCatHeart: "/lovable-uploads/19c53b07-6d4e-4e78-9b18-f6ba9b82d686.png",
-    orangeCatTech: "/lovable-uploads/d7e41bd1-fe5a-4b1c-a1ac-c1cdbdc2d6a3.png",
-    greenCatMatrix: "/lovable-uploads/67ed3b60-3df4-4ad4-b37e-34b51659f9b2.png",
-    purpleCatMystic: "/lovable-uploads/8e3b2b98-d82b-4d5f-9b1d-5e3a7c9d2f8e.png",
-    redCatFire: "/lovable-uploads/f4c8a7d6-2e9b-4f1c-8d3a-6b5e9c8d7a2f.png",
-    yellowCatSun: "/lovable-uploads/b9d5c2a8-7f3e-4b1c-9a6d-8e4f2c1b9a5e.png",
-    whiteCatCloud: "/lovable-uploads/c8b7a9d6-4e2f-4a1c-8b5d-7e3c9f8d2a6b.png",
-    grayCatStorm: "/lovable-uploads/a5d8c7b6-9e4f-4c2a-8d6b-3f7e8c9d5a2b.png",
-    rainbowCatPrism: "/lovable-uploads/e7f9c8d5-2a6b-4e3c-9d8a-6b4f7e2c8d9a.png",
-
-    // All ThiingsIcons folder icons
+    // ThiingsIcons folder - 3D icons mapped correctly
     alienHead: "/src/ThiingsIcons/image-0AtHjvmOGUaLPgn16RmTQAl9THbWc5.png",
     brain3D: "/src/ThiingsIcons/image-0OoMAJRtHLxXtHGKaC50y1kLqsAPFV.png",
     crystalGem: "/src/ThiingsIcons/image-0QeQPgJUNilwfLLC5l1AnfScdu7OC2.png",
@@ -189,8 +177,6 @@ const ThiingsIcon = ({ name, className = "", size = 24 }: ThiingsIconProps) => {
     watermelon3D: "/src/ThiingsIcons/image-c12bJfwU3bGXSu17QkqHYr7BSV5RKE.png",
     windmill3D: "/src/ThiingsIcons/image-c2XthIrBipsE6J5xOJJKV7lASGd6aH.png",
     wizard3D: "/src/ThiingsIcons/image-cRuokpRSq9ekpqqbJA3w5Tg4DWOyLv.png",
-
-    // Additional cable and tech icons
     usbCable: "/src/ThiingsIcons/image-dy1OFUtcBAw3KIMeXrNeaVJtqlwkhr.png",
     cable: "/src/ThiingsIcons/image-e6KG6zoxJdXwdEOxvnYXPN25K0JheJ.png",
     charger: "/src/ThiingsIcons/image-eGdwt0ghqfF9avmbJhC9x9b8zUdJWV.png",
