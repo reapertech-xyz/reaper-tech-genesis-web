@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
+import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { Link, useNavigate } from "react-router-dom";
 import ThiingsIcon from "./ThiingsIcon";
 import Web3WalletConnect from "./Web3WalletConnect";
@@ -12,7 +12,7 @@ interface HeaderProps {
 }
 
 const Header = ({ title }: HeaderProps) => {
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useUnifiedAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -40,7 +40,7 @@ const Header = ({ title }: HeaderProps) => {
             <ThiingsIcon name="gear3D" size={16} className="mr-1" />
             Shortcuts
           </Link>
-          {user && (
+          {(user || profile) && (
             <Link to="/bookmarks" className="text-gray-300 hover:text-cyan-400 font-mono flex items-center">
               <ThiingsIcon name="star3D" size={16} className="mr-1" />
               Bookmarks
@@ -53,11 +53,11 @@ const Header = ({ title }: HeaderProps) => {
           
           <Web3WalletConnect />
           
-          {user ? (
+          {(user || profile) ? (
             <div className="flex items-center space-x-3">
               <span className="text-gray-400 text-sm flex items-center">
                 <ThiingsIcon name="crown3D" size={16} className="mr-1" />
-                {user.email?.split('@')[0]}
+                {profile?.username || user?.email?.split('@')[0] || 'User'}
               </span>
               <Button
                 onClick={handleSignOut}
@@ -102,7 +102,7 @@ const Header = ({ title }: HeaderProps) => {
             <ThiingsIcon name="gear3D" size={16} className="mr-2" />
             Shortcuts
           </Link>
-          {user && (
+          {(user || profile) && (
             <Link to="/bookmarks" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">
               <ThiingsIcon name="star3D" size={16} className="mr-2" />
               Bookmarks
@@ -117,11 +117,11 @@ const Header = ({ title }: HeaderProps) => {
             <Web3WalletConnect />
           </div>
           
-          {user ? (
+          {(user || profile) ? (
             <div className="pt-2 border-t border-gray-700">
               <p className="text-gray-400 text-sm mb-2 flex items-center">
                 <ThiingsIcon name="crown3D" size={16} className="mr-2" />
-                {user.email?.split('@')[0]}
+                {profile?.username || user?.email?.split('@')[0] || 'User'}
               </p>
               <Button
                 onClick={handleSignOut}

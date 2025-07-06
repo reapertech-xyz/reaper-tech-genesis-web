@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ThiingsIcon from '@/components/ThiingsIcon';
-import { useAuth } from '@/hooks/useAuth';
+import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
@@ -23,26 +23,27 @@ interface BookmarkedShortcut {
 const Bookmarks = () => {
   const [bookmarks, setBookmarks] = useState<BookmarkedShortcut[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, profile } = useUnifiedAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
+    if (!user && !profile) {
       navigate('/auth');
       return;
     }
 
     loadBookmarks();
-  }, [user, navigate]);
+  }, [user, profile, navigate]);
 
   const loadBookmarks = async () => {
-    if (!user) return;
+    const currentProfile = profile || (user ? { id: user.id } : null);
+    if (!currentProfile) return;
 
     try {
       const { data, error } = await supabase
         .from('bookmarked_shortcuts')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', currentProfile.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;

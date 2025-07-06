@@ -6,11 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ThiingsIcon from "./ThiingsIcon";
 import { toast } from "sonner";
+import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 
 const Web3WalletConnect = () => {
   const address = useAddress();
   const connectionStatus = useConnectionStatus();
   const disconnect = useDisconnect();
+  const { user, profile, linkWalletToProfile } = useUnifiedAuth();
 
   const handleDisconnect = async () => {
     try {
@@ -22,7 +24,22 @@ const Web3WalletConnect = () => {
     }
   };
 
+  const handleWalletConnect = async () => {
+    if (address && user && !profile?.wallet_address) {
+      try {
+        await linkWalletToProfile(address);
+        toast.success("Wallet linked to your account!");
+      } catch (error) {
+        toast.error("Failed to link wallet to account");
+        console.error("Link wallet error:", error);
+      }
+    }
+  };
+
+  // Show connected state for both wallet-only and email+wallet users
   if (address && connectionStatus === "connected") {
+    const isLinkedToEmailAccount = user && profile?.wallet_address === address;
+    
     return (
       <Card className="bg-gray-900 border-gray-700">
         <CardHeader>
@@ -32,6 +49,11 @@ const Web3WalletConnect = () => {
           </CardTitle>
           <CardDescription className="text-gray-300">
             {address.slice(0, 6)}...{address.slice(-4)}
+            {isLinkedToEmailAccount && (
+              <span className="block text-green-400 text-xs mt-1">
+                Linked to your account
+              </span>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -40,14 +62,26 @@ const Web3WalletConnect = () => {
               <ThiingsIcon name="shield3D" size={16} className="mr-2" />
               Connected
             </span>
-            <Button
-              onClick={handleDisconnect}
-              variant="outline"
-              size="sm"
-              className="border-red-500 text-red-500 hover:bg-red-500/10"
-            >
-              Disconnect
-            </Button>
+            <div className="flex gap-2">
+              {user && !isLinkedToEmailAccount && (
+                <Button
+                  onClick={handleWalletConnect}
+                  variant="outline"
+                  size="sm"
+                  className="border-cyan-500 text-cyan-500 hover:bg-cyan-500/10"
+                >
+                  Link to Account
+                </Button>
+              )}
+              <Button
+                onClick={handleDisconnect}
+                variant="outline"
+                size="sm"
+                className="border-red-500 text-red-500 hover:bg-red-500/10"
+              >
+                Disconnect
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

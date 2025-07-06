@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useAuth } from "./useAuth";
+import { useUnifiedAuth } from "./useUnifiedAuth";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface CartItem {
@@ -12,17 +12,17 @@ export interface CartItem {
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const { user } = useAuth();
+  const { profile } = useUnifiedAuth();
 
   // Load cart from localStorage or Supabase
   useEffect(() => {
     const loadCart = async () => {
-      if (user) {
-        // Load from Supabase for authenticated users
+      if (profile) {
+        // Load from Supabase for authenticated users (email or wallet)
         const { data, error } = await supabase
           .from('saved_carts')
           .select('cart_data')
-          .eq('user_id', user.id)
+          .eq('user_id', profile.id)
           .order('updated_at', { ascending: false })
           .limit(1)
           .maybeSingle();
@@ -57,16 +57,16 @@ export const useCart = () => {
     };
 
     loadCart();
-  }, [user]);
+  }, [profile]);
 
   const saveCartToSupabase = async (cartData: CartItem[]) => {
-    if (!user) return;
+    if (!profile) return;
 
     try {
       const { error } = await supabase
         .from('saved_carts')
         .upsert({
-          user_id: user.id,
+          user_id: profile.id,
           cart_data: cartData as any,
           updated_at: new Date().toISOString()
         }, {
@@ -83,12 +83,12 @@ export const useCart = () => {
 
   // Save cart whenever it changes
   useEffect(() => {
-    if (user) {
+    if (profile) {
       saveCartToSupabase(cart);
     } else {
       localStorage.setItem('reaper-cart', JSON.stringify(cart));
     }
-  }, [cart, user]);
+  }, [cart, profile]);
 
   const updateQuantity = (id: string, change: number) => {
     setCart(cart.map(item => 
@@ -104,7 +104,7 @@ export const useCart = () => {
 
   const clearCart = () => {
     setCart([]);
-    if (!user) {
+    if (!profile) {
       localStorage.removeItem('reaper-cart');
     }
   };
