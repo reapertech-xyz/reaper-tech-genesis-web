@@ -40,6 +40,10 @@ const Header = ({ title }: HeaderProps) => {
             <ThiingsIcon name="gear3D" size={16} className="mr-1" />
             Shortcuts
           </Link>
+          <Link to="/seedvault" className="text-gray-300 hover:text-cyan-400 font-mono flex items-center">
+            <ThiingsIcon name="vault3D" size={16} className="mr-1" />
+            SeedVault
+          </Link>
           {(user || profile) && (
             <Link to="/bookmarks" className="text-gray-300 hover:text-cyan-400 font-mono flex items-center">
               <ThiingsIcon name="star3D" size={16} className="mr-1" />
@@ -101,6 +105,10 @@ const Header = ({ title }: HeaderProps) => {
           <Link to="/shortcuts" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">
             <ThiingsIcon name="gear3D" size={16} className="mr-2" />
             Shortcuts
+          </Link>
+          <Link to="/seedvault" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">
+            <ThiingsIcon name="vault3D" size={16} className="mr-2" />
+            SeedVault
           </Link>
           {(user || profile) && (
             <Link to="/bookmarks" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">

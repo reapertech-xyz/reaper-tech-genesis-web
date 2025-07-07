@@ -14,6 +14,7 @@ import Terms from "./pages/Terms";
 import Cart from "./pages/Cart";
 import Auth from "./pages/Auth";
 import Bookmarks from "./pages/Bookmarks";
+import SeedVault from "./pages/SeedVault";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/cart" element={<Cart />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/bookmarks" element={<Bookmarks />} />
+            <Route path="/seedvault" element={<SeedVault />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

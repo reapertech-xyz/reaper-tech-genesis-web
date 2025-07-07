@@ -36,15 +36,20 @@ const Bookmarks = () => {
   }, [user, profile, navigate]);
 
   const loadBookmarks = async () => {
-    const currentProfile = profile || (user ? { id: user.id } : null);
-    if (!currentProfile) return;
+    if (!user && !profile) return;
 
     try {
-      const { data, error } = await supabase
-        .from('bookmarked_shortcuts')
-        .select('*')
-        .eq('user_id', currentProfile.id)
-        .order('created_at', { ascending: false });
+      let query = supabase.from('bookmarked_shortcuts').select('*');
+      
+      if (user) {
+        // If user is authenticated, get bookmarks for their user ID
+        query = query.eq('user_id', user.id);
+      } else if (profile) {
+        // If only wallet connected, get bookmarks for their profile ID
+        query = query.eq('user_id', profile.id);
+      }
+      
+      const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
       setBookmarks(data || []);
