@@ -51,19 +51,31 @@ export const UnifiedAuthProvider = ({ children }: { children: ReactNode }) => {
           setProfile(data);
         }
       } else if (isConnected && walletAddress) {
-        // Load or create profile for wallet user
-        const { data, error } = await supabase
-          .rpc('get_or_create_wallet_profile', { _wallet_address: walletAddress });
+        // First check if this wallet is already linked to an existing profile
+        const { data: existingProfile, error: existingError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('wallet_address', walletAddress)
+          .maybeSingle();
 
-        if (!error && data) {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', data)
-            .single();
+        if (existingProfile && !existingError) {
+          // Use the existing linked profile
+          setProfile(existingProfile);
+        } else {
+          // Create a new wallet-only profile
+          const { data, error } = await supabase
+            .rpc('get_or_create_wallet_profile', { _wallet_address: walletAddress });
 
-          if (profileData) {
-            setProfile(profileData);
+          if (!error && data) {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', data)
+              .single();
+
+            if (profileData) {
+              setProfile(profileData);
+            }
           }
         }
       } else {
