@@ -83,7 +83,7 @@ const Shop = () => {
       id: "100w-hub-charger",
       title: <><ThiingsIcon name="network" size={16} className="mr-2" />100W 4-Port USB Hub Charger</>,
       prices: "$50.00",
-      subtitle: "Ports: 2x USB-C + 2x USB-A",
+      subtitle: "Ports: 3x USB-C + 1x USB-A",
       style: "Charge your world. All at once.",
       description: "Designed for desks, co-working rituals, or traveling shamans. Share the current with up to four devices — fast, safe, and without judgment.",
       images: [
