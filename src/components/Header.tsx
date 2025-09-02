@@ -41,8 +41,8 @@ const Header = ({ title }: HeaderProps) => {
             Shortcuts
           </Link>
           <Link to="/seedvault" className="text-gray-300 hover:text-cyan-400 font-mono flex items-center">
-            <ThiingsIcon name="vault3D" size={16} className="mr-1" />
-            SeedVault
+            <ThiingsIcon name="market3D" size={16} className="mr-1" />
+            Ledger Fields
           </Link>
           {(user || profile) && (
             <Link to="/bookmarks" className="text-gray-300 hover:text-cyan-400 font-mono flex items-center">
@@ -107,8 +107,8 @@ const Header = ({ title }: HeaderProps) => {
             Shortcuts
           </Link>
           <Link to="/seedvault" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">
-            <ThiingsIcon name="vault3D" size={16} className="mr-2" />
-            SeedVault
+            <ThiingsIcon name="market3D" size={16} className="mr-2" />
+            Ledger Fields
           </Link>
           {(user || profile) && (
             <Link to="/bookmarks" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">
