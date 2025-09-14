@@ -25,27 +25,21 @@ class EscrowService {
    * Create a new escrow transaction
    */
   public async createTransaction(request: EscrowCreateRequest): Promise<EscrowApiResponse<EscrowTransaction>> {
+    const { supabase } = await import('@/integrations/supabase/client');
+    
     try {
-      // For demo purposes, we'll simulate the API call
-      // In production, this would make an actual HTTP request to Escrow.com
-      const mockTransaction: EscrowTransaction = {
-        id: `esc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        buyerId: request.buyerId,
-        sellerId: request.sellerId,
-        amount: request.amount,
-        currency: request.currency,
-        description: request.description,
-        status: EscrowStatus.INITIATED,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        releaseConditions: request.releaseConditions || []
-      };
+      const { data, error } = await supabase.functions.invoke('escrow-api', {
+        body: {
+          action: 'create',
+          ...request
+        }
+      });
 
-      return {
-        success: true,
-        data: mockTransaction,
-        message: 'Escrow transaction created successfully'
-      };
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
     } catch (error) {
       return {
         success: false,
@@ -58,12 +52,21 @@ class EscrowService {
    * Get transaction by ID
    */
   public async getTransaction(transactionId: string): Promise<EscrowApiResponse<EscrowTransaction>> {
+    const { supabase } = await import('@/integrations/supabase/client');
+    
     try {
-      // Mock implementation - in production this would fetch from Escrow.com API
-      return {
-        success: false,
-        error: 'Transaction not found (mock implementation)'
-      };
+      const { data, error } = await supabase.functions.invoke('escrow-api', {
+        body: {
+          action: 'get',
+          transactionId
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
     } catch (error) {
       return {
         success: false,
@@ -76,12 +79,21 @@ class EscrowService {
    * Release funds to seller (buyer confirmation)
    */
   public async releaseFunds(transactionId: string): Promise<EscrowApiResponse<EscrowTransaction>> {
+    const { supabase } = await import('@/integrations/supabase/client');
+    
     try {
-      // Mock implementation
-      return {
-        success: true,
-        message: 'Funds released to seller'
-      };
+      const { data, error } = await supabase.functions.invoke('escrow-api', {
+        body: {
+          action: 'release',
+          transactionId
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
     } catch (error) {
       return {
         success: false,
@@ -94,12 +106,22 @@ class EscrowService {
    * Initiate dispute for a transaction
    */
   public async initiateDispute(transactionId: string, reason: string): Promise<EscrowApiResponse<EscrowTransaction>> {
+    const { supabase } = await import('@/integrations/supabase/client');
+    
     try {
-      // Mock implementation
-      return {
-        success: true,
-        message: 'Dispute initiated successfully'
-      };
+      const { data, error } = await supabase.functions.invoke('escrow-api', {
+        body: {
+          action: 'dispute',
+          transactionId,
+          reason
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
     } catch (error) {
       return {
         success: false,
@@ -112,12 +134,21 @@ class EscrowService {
    * Cancel transaction (if not yet funded)
    */
   public async cancelTransaction(transactionId: string): Promise<EscrowApiResponse<EscrowTransaction>> {
+    const { supabase } = await import('@/integrations/supabase/client');
+    
     try {
-      // Mock implementation
-      return {
-        success: true,
-        message: 'Transaction cancelled successfully'
-      };
+      const { data, error } = await supabase.functions.invoke('escrow-api', {
+        body: {
+          action: 'cancel',
+          transactionId
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
     } catch (error) {
       return {
         success: false,
@@ -130,13 +161,21 @@ class EscrowService {
    * Get user's transaction history
    */
   public async getUserTransactions(userId: string): Promise<EscrowApiResponse<EscrowTransaction[]>> {
+    const { supabase } = await import('@/integrations/supabase/client');
+    
     try {
-      // Mock implementation - return empty array for now
-      return {
-        success: true,
-        data: [],
-        message: 'Transactions retrieved successfully'
-      };
+      const { data, error } = await supabase.functions.invoke('escrow-api', {
+        body: {
+          action: 'user-transactions',
+          userId
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
     } catch (error) {
       return {
         success: false,
