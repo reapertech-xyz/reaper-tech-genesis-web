@@ -7,10 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
@@ -44,6 +44,113 @@ export type Database = {
           download_link?: string | null
           id?: string
           share_link?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      escrow_transactions: {
+        Row: {
+          amount: number
+          buyer_id: string
+          created_at: string
+          crypto_details: Json | null
+          currency: string
+          dispute_reason: string | null
+          escrow_transaction_id: string | null
+          id: string
+          listing_id: string | null
+          release_conditions: string[] | null
+          seller_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          buyer_id: string
+          created_at?: string
+          crypto_details?: Json | null
+          currency: string
+          dispute_reason?: string | null
+          escrow_transaction_id?: string | null
+          id?: string
+          listing_id?: string | null
+          release_conditions?: string[] | null
+          seller_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          buyer_id?: string
+          created_at?: string
+          crypto_details?: Json | null
+          currency?: string
+          dispute_reason?: string | null
+          escrow_transaction_id?: string | null
+          id?: string
+          listing_id?: string | null
+          release_conditions?: string[] | null
+          seller_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_transactions_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_listings: {
+        Row: {
+          category: string | null
+          created_at: string
+          crypto_currency: string | null
+          currency: string
+          description: string | null
+          id: string
+          image_urls: string[] | null
+          price: number
+          shipping_cost: number | null
+          shipping_required: boolean | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          crypto_currency?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          image_urls?: string[] | null
+          price: number
+          shipping_cost?: number | null
+          shipping_required?: boolean | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          crypto_currency?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          image_urls?: string[] | null
+          price?: number
+          shipping_cost?: number | null
+          shipping_required?: boolean | null
+          status?: string
           title?: string
           updated_at?: string
           user_id?: string
@@ -99,6 +206,80 @@ export type Database = {
           cart_data?: Json
           created_at?: string
           id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transaction_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          reviewee_id: string
+          reviewer_id: string
+          transaction_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          reviewee_id: string
+          reviewer_id: string
+          transaction_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          reviewee_id?: string
+          reviewer_id?: string
+          transaction_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_reviews_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "escrow_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_reputation: {
+        Row: {
+          created_at: string
+          id: string
+          rating_average: number | null
+          successful_transactions: number | null
+          tier: string | null
+          total_rating_count: number | null
+          total_transactions: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rating_average?: number | null
+          successful_transactions?: number | null
+          tier?: string | null
+          total_rating_count?: number | null
+          total_transactions?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rating_average?: number | null
+          successful_transactions?: number | null
+          tier?: string | null
+          total_rating_count?: number | null
+          total_transactions?: number | null
           updated_at?: string
           user_id?: string
         }
