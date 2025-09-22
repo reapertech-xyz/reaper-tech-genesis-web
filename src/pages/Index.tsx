@@ -36,7 +36,7 @@ const Index = () => {
         <div className="max-w-6xl mx-auto text-center">
           <div className="flex justify-center items-center mb-8 space-x-8">
             <ThiingsIcon name="blackCat" size={100} className="animate-pulse" />
-            <ThiingsIcon name="reaperHood" size={120} />
+            <ThiingsIcon name="gradientHoodie" size={120} />
             <ThiingsIcon name="purpleCatMystic" size={100} className="animate-pulse" />
           </div>
           
