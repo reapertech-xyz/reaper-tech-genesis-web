@@ -282,7 +282,7 @@ export const iconMappings: Record<string, string> = {
   handheldCounter: "/src/ThiingsIcons/handheld-digital-counter.png",
   silverKeycap: "/src/ThiingsIcons/silver-keycap-sparkle.png",
   colorfulKeyboard: "/src/ThiingsIcons/colorful-rainbow-keyboard.png",
-  retroKeyboard: "/src/ThiingsIcons/retrocomputer-keyboard.png",
+  retroKeyboard2: "/src/ThiingsIcons/retrocomputer-keyboard.png",
   colorfulRubik: "/src/ThiingsIcons/colorful-rubiks-cube.png",
   rcCar: "/src/ThiingsIcons/rc-car-kit-assembly.png",
   discoball: "/src/ThiingsIcons/sparkling-disco-ball.png",
