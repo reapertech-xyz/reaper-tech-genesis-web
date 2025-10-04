@@ -1,1 +1,4 @@
 project_id = "beoutzkrtzzdopociraq"
+
+[functions.mint-nft]
+verify_jwt = false
