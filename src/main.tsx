@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThirdwebProvider
       activeChain={Sepolia}
-      clientId={import.meta.env.VITE_THIRDWEB_CLIENT_ID}
+      clientId={import.meta.env.THIRDWEB_CLIENT_ID}
     >
       <App />
     </ThirdwebProvider>
