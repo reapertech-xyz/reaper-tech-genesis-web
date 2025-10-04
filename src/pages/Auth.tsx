@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,26 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ThiingsIcon from '@/components/ThiingsIcon';
 import { useToast } from '@/hooks/use-toast';
+
+// Validation schemas
+const emailSchema = z.string()
+  .trim()
+  .min(1, 'Email is required')
+  .email('Invalid email address')
+  .max(255, 'Email must be less than 255 characters');
+
+const passwordSchema = z.string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(72, 'Password must be less than 72 characters')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number');
+
+const usernameSchema = z.string()
+  .trim()
+  .min(3, 'Username must be at least 3 characters')
+  .max(30, 'Username must be less than 30 characters')
+  .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, hyphens, and underscores');
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -32,6 +53,44 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Validate email
+      const emailValidation = emailSchema.safeParse(email);
+      if (!emailValidation.success) {
+        toast({
+          title: "Validation Error",
+          description: emailValidation.error.errors[0].message,
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Validate password
+      const passwordValidation = passwordSchema.safeParse(password);
+      if (!passwordValidation.success) {
+        toast({
+          title: "Validation Error",
+          description: passwordValidation.error.errors[0].message,
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Validate username for signup
+      if (!isLogin) {
+        const usernameValidation = usernameSchema.safeParse(username);
+        if (!usernameValidation.success) {
+          toast({
+            title: "Validation Error",
+            description: usernameValidation.error.errors[0].message,
+            variant: "destructive"
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
       let result;
       if (isLogin) {
         result = await signIn(email, password);
@@ -56,7 +115,12 @@ const Auth = () => {
         }
       }
     } catch (error) {
-      console.error('Auth error:', error);
+      // Production-safe error handling without logging sensitive details
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }

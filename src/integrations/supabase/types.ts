@@ -162,6 +162,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           email: string | null
+          encrypted_email: string | null
           id: string
           updated_at: string
           username: string | null
@@ -171,6 +172,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          encrypted_email?: string | null
           id: string
           updated_at?: string
           username?: string | null
@@ -180,6 +182,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          encrypted_email?: string | null
           id?: string
           updated_at?: string
           username?: string | null
@@ -290,6 +293,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_decrypted_email: {
+        Args: { profile_id: string }
+        Returns: string
+      }
       get_or_create_wallet_profile: {
         Args: { _wallet_address: string }
         Returns: string
