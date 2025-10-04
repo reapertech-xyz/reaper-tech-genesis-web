@@ -12,3 +12,14 @@ export function formatCurrency(amount: number): string {
     currency: 'USD'
   }).format(amount);
 }
+
+/**
+ * Masks a user ID by showing only prefix and last 4 characters
+ * @param userId - The full UUID to mask
+ * @returns Masked ID in format: user_...xxxx
+ */
+export function maskUserId(userId: string): string {
+  if (!userId || userId.length < 8) return 'user_...????';
+  const last4 = userId.slice(-4);
+  return `user_...${last4}`;
+}
