@@ -154,10 +154,6 @@ export const useEscrow = () => {
     }
   }, []);
 
-  const initializeEscrowService = useCallback((apiKey: string, sandbox: boolean = true) => {
-    escrowService.initialize(apiKey, sandbox);
-  }, []);
-
   return {
     transactions,
     loading,
@@ -165,7 +161,6 @@ export const useEscrow = () => {
     createTransaction,
     releaseFunds,
     initiateDispute,
-    loadUserTransactions,
-    initializeEscrowService
+    loadUserTransactions
   };
 };

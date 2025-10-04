@@ -1,25 +1,8 @@
 import { EscrowTransaction, EscrowCreateRequest, EscrowStatus, EscrowApiResponse } from '@/types/escrow';
 
-// Base configuration for Escrow.com API
-const ESCROW_API_BASE = 'https://api.escrow.com/v1';
-
 class EscrowService {
-  private apiKey: string | null = null;
-  private sandbox: boolean = true;
-
-  constructor() {
-    // In a real implementation, this would come from environment variables
-    // For now, we'll use a placeholder approach
-    this.apiKey = process.env.VITE_ESCROW_API_KEY || null;
-  }
-
-  /**
-   * Initialize escrow service with API credentials
-   */
-  public initialize(apiKey: string, sandbox: boolean = true): void {
-    this.apiKey = apiKey;
-    this.sandbox = sandbox;
-  }
+  // All API calls are proxied through the escrow-api edge function
+  // which securely handles API keys stored in Supabase secrets
 
   /**
    * Create a new escrow transaction
@@ -184,29 +167,6 @@ class EscrowService {
     }
   }
 
-  private async makeRequest(endpoint: string, method: string = 'GET', data?: any): Promise<any> {
-    if (!this.apiKey) {
-      throw new Error('Escrow service not initialized with API key');
-    }
-
-    const url = `${ESCROW_API_BASE}${endpoint}`;
-    const headers = {
-      'Authorization': `Bearer ${this.apiKey}`,
-      'Content-Type': 'application/json'
-    };
-
-    const response = await fetch(url, {
-      method,
-      headers,
-      body: data ? JSON.stringify(data) : undefined
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return response.json();
-  }
 }
 
 // Export singleton instance
