@@ -1,7 +1,7 @@
 // Icon mappings organized by category for better maintainability
 export const iconMappings: Record<string, string> = {
   // Existing icons from lovable-uploads
-  reaperHood: "/lovable-uploads/1d232681-b4f3-4e00-8fa3-93aeb478dee6.png",
+  reaperHood: "/lovable-uploads/reaper-tech-3d-logo.png",
   bolt: "/lovable-uploads/74a314ec-2755-4636-a063-5d1e955d796e.png",
   wallAdapter: "/lovable-uploads/4687d604-305c-408c-9bfc-1901697c58c3.png",
   datacenter: "/lovable-uploads/15c896f9-a037-42e5-92f1-0ef090c3b823.png",
