@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.12 (cd3cf9e)"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -290,7 +290,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_user_reputation: {
+        Row: {
+          has_transactions: boolean | null
+          rating_average: number | null
+          tier: string | null
+          total_rating_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          has_transactions?: never
+          rating_average?: number | null
+          tier?: string | null
+          total_rating_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          has_transactions?: never
+          rating_average?: number | null
+          tier?: string | null
+          total_rating_count?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_decrypted_email: {
