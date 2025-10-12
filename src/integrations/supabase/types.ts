@@ -290,30 +290,7 @@ export type Database = {
       }
     }
     Views: {
-      public_user_reputation: {
-        Row: {
-          has_transactions: boolean | null
-          rating_average: number | null
-          tier: string | null
-          total_rating_count: number | null
-          user_id: string | null
-        }
-        Insert: {
-          has_transactions?: never
-          rating_average?: number | null
-          tier?: string | null
-          total_rating_count?: number | null
-          user_id?: string | null
-        }
-        Update: {
-          has_transactions?: never
-          rating_average?: number | null
-          tier?: string | null
-          total_rating_count?: number | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       get_decrypted_email: {
