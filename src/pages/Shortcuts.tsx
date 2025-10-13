@@ -70,6 +70,12 @@ const Shortcuts = () => {
               <ThiingsIcon name="heart3D" size={20} className="mr-2" />
               Automations that aren't just smart — they're soulful.
             </p>
+            <div className="mt-6 p-4 bg-gradient-to-r from-pink-900/30 to-orange-900/30 rounded-lg border border-pink-500/30">
+              <p className="text-pink-400 font-mono flex items-center justify-center">
+                <ThiingsIcon name="heart3D" size={20} className="mr-2" />
+                💝 We accept donations via card & crypto! Click the heart button to support our work.
+              </p>
+            </div>
           </div>
         </div>
 
