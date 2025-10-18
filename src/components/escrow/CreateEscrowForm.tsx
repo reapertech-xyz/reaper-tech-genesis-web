@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { useEscrow } from "@/hooks/useEscrow";
+import { useCryptoEscrow } from "@/hooks/useCryptoEscrow";
+import { useAddress } from "@thirdweb-dev/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, DollarSign, Bitcoin } from "lucide-react";
+import { Shield, DollarSign, Bitcoin, Wallet, RefreshCw } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface CreateEscrowFormProps {
   onSuccess?: () => void;
@@ -30,6 +33,8 @@ interface CreateEscrowFormProps {
 const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFormProps) => {
   const { user, profile } = useUnifiedAuth();
   const { createTransaction, loading } = useEscrow();
+  const { checkBalance, getConversion, loading: cryptoLoading } = useCryptoEscrow();
+  const walletAddress = useAddress();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -41,6 +46,8 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
     cryptoCurrency: "ETH",
   });
 
+  const [walletBalance, setWalletBalance] = useState<string | null>(null);
+  const [conversion, setConversion] = useState<string | null>(null);
   const [releaseConditions, setReleaseConditions] = useState<string[]>([]);
   const [customCondition, setCustomCondition] = useState("");
 
@@ -50,6 +57,61 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
     "Digital goods received and verified",
     "Inspection period completed",
   ];
+
+  const handleCheckBalance = async () => {
+    if (!walletAddress) {
+      toast({
+        title: "Wallet Not Connected",
+        description: "Please connect your wallet first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const result = await checkBalance(walletAddress, formData.cryptoCurrency);
+    if (result) {
+      setWalletBalance(result.balance);
+      toast({
+        title: "Balance Checked",
+        description: `${result.balance} ${result.currency} available`,
+      });
+    }
+  };
+
+  const handleAmountChange = async (value: string) => {
+    setFormData({ ...formData, amount: value });
+
+    // Auto-convert if crypto payment
+    if (formData.paymentMethod === 'crypto' && value && Number(value) > 0) {
+      const result = await getConversion(
+        formData.currency,
+        formData.cryptoCurrency,
+        Number(value)
+      );
+      if (result) {
+        setConversion(`≈ ${result.convertedAmount} ${formData.cryptoCurrency}`);
+      }
+    } else {
+      setConversion(null);
+    }
+  };
+
+  const handleCryptoChange = async (value: string) => {
+    setFormData({ ...formData, cryptoCurrency: value });
+    setWalletBalance(null); // Reset balance when currency changes
+
+    // Re-convert if amount exists
+    if (formData.amount && Number(formData.amount) > 0) {
+      const result = await getConversion(
+        formData.currency,
+        value,
+        Number(formData.amount)
+      );
+      if (result) {
+        setConversion(`≈ ${result.convertedAmount} ${value}`);
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,6 +203,44 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
             </Label>
           </div>
         </RadioGroup>
+
+        {formData.paymentMethod === 'crypto' && walletAddress && (
+          <Card className="p-4 bg-cyan-500/10 border-cyan-500/30">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-300">
+                  <Wallet className="h-4 w-4" />
+                  <span className="font-mono">{walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}</span>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={handleCheckBalance}
+                  disabled={cryptoLoading}
+                  className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10"
+                >
+                  <RefreshCw className={`h-3 w-3 mr-1 ${cryptoLoading ? 'animate-spin' : ''}`} />
+                  Check Balance
+                </Button>
+              </div>
+              {walletBalance && (
+                <div className="text-sm">
+                  <span className="text-gray-400">Available: </span>
+                  <span className="text-cyan-400 font-semibold">{walletBalance} {formData.cryptoCurrency}</span>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {formData.paymentMethod === 'crypto' && !walletAddress && (
+          <Card className="p-4 bg-yellow-500/10 border-yellow-500/30">
+            <p className="text-sm text-yellow-300">
+              ⚠️ Please connect your Web3 wallet to proceed with cryptocurrency payment
+            </p>
+          </Card>
+        )}
       </div>
 
       {/* Seller ID */}
@@ -170,11 +270,14 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
             step="0.01"
             min="0"
             value={formData.amount}
-            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+            onChange={(e) => handleAmountChange(e.target.value)}
             placeholder="0.00"
             className="bg-gray-800 border-gray-700"
             required
           />
+          {conversion && formData.paymentMethod === 'crypto' && (
+            <p className="text-xs text-cyan-400">{conversion}</p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="currency">Currency</Label>
@@ -197,16 +300,17 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
           ) : (
             <Select
               value={formData.cryptoCurrency}
-              onValueChange={(value) => setFormData({ ...formData, cryptoCurrency: value })}
+              onValueChange={handleCryptoChange}
             >
               <SelectTrigger className="bg-gray-800 border-gray-700">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ETH">ETH</SelectItem>
-                <SelectItem value="BTC">BTC</SelectItem>
-                <SelectItem value="USDC">USDC</SelectItem>
-                <SelectItem value="USDT">USDT</SelectItem>
+                <SelectItem value="ETH">ETH (Ethereum)</SelectItem>
+                <SelectItem value="BTC">BTC (Bitcoin)</SelectItem>
+                <SelectItem value="USDC">USDC (Stablecoin)</SelectItem>
+                <SelectItem value="USDT">USDT (Tether)</SelectItem>
+                <SelectItem value="MATIC">MATIC (Polygon)</SelectItem>
               </SelectContent>
             </Select>
           )}

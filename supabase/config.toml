@@ -2,3 +2,9 @@ project_id = "beoutzkrtzzdopociraq"
 
 [functions.mint-nft]
 verify_jwt = false
+
+[functions.escrow-api]
+verify_jwt = true
+
+[functions.crypto-escrow]
+verify_jwt = true
