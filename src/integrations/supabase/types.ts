@@ -50,6 +50,47 @@ export type Database = {
         }
         Relationships: []
       }
+      escrow_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: string | null
+          transaction_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          transaction_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          transaction_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_audit_log_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "escrow_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escrow_transactions: {
         Row: {
           amount: number
@@ -166,6 +207,9 @@ export type Database = {
           id: string
           updated_at: string
           username: string | null
+          verification_data: Json | null
+          verification_status: string | null
+          verified_at: string | null
           wallet_address: string | null
         }
         Insert: {
@@ -176,6 +220,9 @@ export type Database = {
           id: string
           updated_at?: string
           username?: string | null
+          verification_data?: Json | null
+          verification_status?: string | null
+          verified_at?: string | null
           wallet_address?: string | null
         }
         Update: {
@@ -186,7 +233,37 @@ export type Database = {
           id?: string
           updated_at?: string
           username?: string | null
+          verification_data?: Json | null
+          verification_status?: string | null
+          verified_at?: string | null
           wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      rate_limit_tracking: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          request_count: number | null
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          request_count?: number | null
+          user_id: string
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          request_count?: number | null
+          user_id?: string
+          window_start?: string
         }
         Relationships: []
       }
@@ -293,6 +370,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_create_transaction: {
+        Args: { _amount: number; _user_id: string }
+        Returns: Json
+      }
       get_decrypted_email: {
         Args: { profile_id: string }
         Returns: string
@@ -300,6 +381,10 @@ export type Database = {
       get_or_create_wallet_profile: {
         Args: { _wallet_address: string }
         Returns: string
+      }
+      get_tier_transaction_limit: {
+        Args: { user_tier: string }
+        Returns: number
       }
     }
     Enums: {
