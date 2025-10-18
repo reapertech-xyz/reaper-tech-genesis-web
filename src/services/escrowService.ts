@@ -22,8 +22,18 @@ class EscrowService {
         throw new Error(error.message);
       }
 
+      if (!data.success && data.tierInfo) {
+        const tierError: any = new Error(data.error);
+        tierError.tierInfo = data.tierInfo;
+        throw tierError;
+      }
+
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.tierInfo) {
+        throw error;
+      }
+      
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to create escrow transaction'

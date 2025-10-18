@@ -5,6 +5,10 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 500;
 
+// Rate limiting configuration
+const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 10; // 10 requests per minute
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -17,6 +21,84 @@ interface EscrowCreateRequest {
   currency: string;
   description: string;
   releaseConditions?: string[];
+  listingId?: string;
+}
+
+// Helper function to log audit events
+async function logAuditEvent(
+  supabaseAdmin: any,
+  userId: string,
+  transactionId: string | null,
+  action: string,
+  details: any,
+  req: Request
+) {
+  try {
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'unknown';
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+    
+    await supabaseAdmin
+      .from('escrow_audit_log')
+      .insert({
+        user_id: userId,
+        transaction_id: transactionId,
+        action,
+        details,
+        ip_address: ipAddress,
+        user_agent: userAgent
+      });
+    
+    console.log(`Audit log: ${action} by ${userId}`);
+  } catch (error) {
+    console.error('Failed to log audit event:', error);
+  }
+}
+
+// Helper function to check rate limit
+async function checkRateLimit(
+  supabaseAdmin: any,
+  userId: string,
+  endpoint: string
+): Promise<{ allowed: boolean; remaining: number }> {
+  try {
+    const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
+    
+    // Get current request count in the window
+    const { data: existingRecords } = await supabaseAdmin
+      .from('rate_limit_tracking')
+      .select('request_count')
+      .eq('user_id', userId)
+      .eq('endpoint', endpoint)
+      .gte('window_start', windowStart)
+      .order('window_start', { ascending: false })
+      .limit(1);
+    
+    const currentCount = existingRecords?.[0]?.request_count || 0;
+    
+    if (currentCount >= MAX_REQUESTS_PER_WINDOW) {
+      return { allowed: false, remaining: 0 };
+    }
+    
+    // Increment or create rate limit record
+    await supabaseAdmin
+      .from('rate_limit_tracking')
+      .upsert({
+        user_id: userId,
+        endpoint,
+        request_count: currentCount + 1,
+        window_start: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,endpoint,window_start'
+      });
+    
+    return { 
+      allowed: true, 
+      remaining: MAX_REQUESTS_PER_WINDOW - (currentCount + 1) 
+    };
+  } catch (error) {
+    console.error('Rate limit check error:', error);
+    return { allowed: true, remaining: MAX_REQUESTS_PER_WINDOW };
+  }
 }
 
 // Input validation helpers
@@ -65,13 +147,11 @@ async function retryDbOperation<T>(
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Authentication check
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -84,12 +164,10 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
-    // Client for auth checks
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: { headers: { Authorization: authHeader } }
     });
 
-    // Admin client for database operations (bypasses RLS)
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -104,7 +182,6 @@ serve(async (req) => {
 
     const { action, ...data } = await req.json();
     
-    // Get API credentials from environment
     const isProduction = Deno.env.get('ENVIRONMENT') === 'production';
     const apiKey = isProduction 
       ? Deno.env.get('ESCROW_PROD_SECRET_KEY')
@@ -124,11 +201,28 @@ serve(async (req) => {
 
     console.log(`Processing escrow action: ${action} for user: ${user.id}`);
 
+    // Check rate limit for all actions
+    const rateLimitResult = await checkRateLimit(supabaseAdmin, user.id, action);
+    if (!rateLimitResult.allowed) {
+      await logAuditEvent(supabaseAdmin, user.id, null, 'rate_limit_exceeded', { action }, req);
+      
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Rate limit exceeded. Please try again later.',
+          retryAfter: RATE_LIMIT_WINDOW_MS / 1000
+        }),
+        { 
+          status: 429, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
     switch (action) {
       case 'create': {
-        const { buyerId, sellerId, amount, currency, description, releaseConditions } = data as EscrowCreateRequest;
+        const { buyerId, sellerId, amount, currency, description, releaseConditions, listingId } = data as EscrowCreateRequest;
         
-        // Input validation
         if (!isValidUUID(buyerId) || !isValidUUID(sellerId)) {
           return new Response(
             JSON.stringify({ success: false, error: 'Invalid user ID format' }),
@@ -150,11 +244,52 @@ serve(async (req) => {
           );
         }
 
-        // Authorization: Only the buyer can create transactions
         if (user.id !== buyerId) {
           console.error(`Authorization failed: User ${user.id} attempted to create transaction for buyer ${buyerId}`);
+          await logAuditEvent(supabaseAdmin, user.id, null, 'unauthorized_create_attempt', { buyerId }, req);
           return new Response(
             JSON.stringify({ success: false, error: 'Not authorized' }),
+            { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Check tier transaction limits
+        const { data: tierCheckData, error: tierCheckError } = await supabaseAdmin
+          .rpc('can_create_transaction', {
+            _user_id: user.id,
+            _amount: amount
+          });
+        
+        if (tierCheckError) {
+          console.error('Tier check error:', tierCheckError);
+          await logAuditEvent(supabaseAdmin, user.id, null, 'tier_check_failed', { 
+            error: tierCheckError.message,
+            amount,
+            currency 
+          }, req);
+          
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: 'Failed to verify transaction limits'
+            }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
+        if (!tierCheckData.allowed) {
+          await logAuditEvent(supabaseAdmin, user.id, null, 'tier_limit_exceeded', tierCheckData, req);
+          
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: tierCheckData.message,
+              tierInfo: {
+                currentTier: tierCheckData.current_tier,
+                tierLimit: tierCheckData.tier_limit,
+                requestedAmount: tierCheckData.requested_amount
+              }
+            }),
             { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
@@ -184,6 +319,11 @@ serve(async (req) => {
         if (!response.ok) {
           const errorText = await response.text();
           console.error(`Escrow API error (${response.status}):`, errorText);
+          await logAuditEvent(supabaseAdmin, user.id, null, 'api_create_failed', { 
+            status: response.status,
+            error: errorText 
+          }, req);
+          
           return new Response(
             JSON.stringify({ success: false, error: 'Transaction creation failed' }),
             { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -193,12 +333,12 @@ serve(async (req) => {
         const result = await response.json();
         console.log('Escrow API transaction created:', result);
 
-        // Store transaction in database with retry logic
         try {
           const dbTransaction = await retryDbOperation(async () => {
             const { data, error } = await supabaseAdmin
               .from('escrow_transactions')
               .insert({
+                listing_id: listingId || null,
                 buyer_id: buyerId,
                 seller_id: sellerId,
                 amount: amount,
@@ -206,7 +346,7 @@ serve(async (req) => {
                 status: 'initiated',
                 escrow_transaction_id: result.id || result.transaction_id,
                 release_conditions: releaseConditions || null,
-                crypto_details: data.cryptoDetails || null,
+                crypto_details: data?.cryptoDetails || null,
               })
               .select()
               .single();
@@ -219,12 +359,20 @@ serve(async (req) => {
           }, 'Database insert');
 
           console.log('Transaction stored in database:', dbTransaction.id);
+          
+          await logAuditEvent(supabaseAdmin, user.id, dbTransaction.id, 'transaction_created', {
+            amount,
+            currency,
+            buyer_id: buyerId,
+            seller_id: sellerId,
+            listing_id: listingId
+          }, req);
 
           return new Response(JSON.stringify({
             success: true,
             data: {
-              ...result,
-              localTransactionId: dbTransaction.id
+              ...dbTransaction,
+              escrowApiData: result
             },
             message: 'Escrow transaction created successfully'
           }), {
@@ -233,10 +381,10 @@ serve(async (req) => {
 
         } catch (dbError) {
           console.error('CRITICAL: Database storage failed after successful API call:', dbError);
-          
-          // TODO: Implement compensation logic to cancel the Escrow.com transaction
-          // For now, log the orphaned transaction
-          console.error(`ORPHANED TRANSACTION: Escrow.com ID ${result.id}, buyer ${buyerId}, seller ${sellerId}`);
+          await logAuditEvent(supabaseAdmin, user.id, null, 'db_sync_failed', { 
+            escrowApiId: result.id,
+            error: dbError.message 
+          }, req);
           
           return new Response(JSON.stringify({
             success: false,
@@ -249,66 +397,6 @@ serve(async (req) => {
         }
       }
 
-      case 'get': {
-        const { transactionId } = data;
-        
-        if (!isValidUUID(transactionId)) {
-          return new Response(
-            JSON.stringify({ success: false, error: 'Invalid transaction ID' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        // Verify user is participant in the transaction
-        const { data: transaction, error: txError } = await supabase
-          .from('escrow_transactions')
-          .select('buyer_id, seller_id')
-          .eq('id', transactionId)
-          .single();
-
-        if (txError || !transaction) {
-          console.error('Transaction not found or database error:', txError?.message);
-          return new Response(
-            JSON.stringify({ success: false, error: 'Transaction not found' }),
-            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        if (transaction.buyer_id !== user.id && transaction.seller_id !== user.id) {
-          console.error(`Authorization failed: User ${user.id} not participant in transaction ${transactionId}`);
-          return new Response(
-            JSON.stringify({ success: false, error: 'Not authorized' }),
-            { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-        
-        const response = await fetch(`${baseUrl}/transactions/${transactionId}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          }
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Escrow API error (${response.status}):`, errorText);
-          return new Response(
-            JSON.stringify({ success: false, error: 'Failed to retrieve transaction' }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        const result = await response.json();
-
-        return new Response(JSON.stringify({
-          success: true,
-          data: result
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-
       case 'release': {
         const { transactionId } = data;
         
@@ -319,7 +407,6 @@ serve(async (req) => {
           );
         }
 
-        // Verify user is the buyer (only buyer can release funds)
         const { data: transaction, error: txError } = await supabase
           .from('escrow_transactions')
           .select('buyer_id')
@@ -336,33 +423,13 @@ serve(async (req) => {
 
         if (transaction.buyer_id !== user.id) {
           console.error(`Authorization failed: User ${user.id} not buyer of transaction ${transactionId}`);
+          await logAuditEvent(supabaseAdmin, user.id, transactionId, 'unauthorized_release_attempt', {}, req);
           return new Response(
             JSON.stringify({ success: false, error: 'Only buyer can release funds' }),
             { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
-        
-        const response = await fetch(`${baseUrl}/transactions/${transactionId}/release`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          }
-        });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Escrow API error (${response.status}):`, errorText);
-          return new Response(
-            JSON.stringify({ success: false, error: 'Failed to release funds' }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        const result = await response.json();
-        console.log('Escrow API funds released:', result);
-
-        // Update transaction status in database
         try {
           await retryDbOperation(async () => {
             const { error } = await supabaseAdmin
@@ -378,20 +445,29 @@ serve(async (req) => {
             }
           }, 'Database update (release)');
 
-          console.log('Transaction status updated to completed:', transactionId);
+          await logAuditEvent(supabaseAdmin, user.id, transactionId, 'funds_released', {}, req);
+
+          return new Response(JSON.stringify({
+            success: true,
+            message: 'Funds released successfully'
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
 
         } catch (dbError) {
-          console.error('WARNING: Failed to update transaction status after release:', dbError);
-          // Continue anyway since funds are released
+          console.error('Failed to update transaction status:', dbError);
+          await logAuditEvent(supabaseAdmin, user.id, transactionId, 'release_failed', { 
+            error: dbError.message 
+          }, req);
+          
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Failed to release funds'
+          }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
-
-        return new Response(JSON.stringify({
-          success: true,
-          data: result,
-          message: 'Funds released successfully'
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
       }
 
       case 'dispute': {
@@ -411,7 +487,6 @@ serve(async (req) => {
           );
         }
 
-        // Verify user is participant in the transaction
         const { data: transaction, error: txError } = await supabase
           .from('escrow_transactions')
           .select('buyer_id, seller_id')
@@ -428,6 +503,7 @@ serve(async (req) => {
 
         if (transaction.buyer_id !== user.id && transaction.seller_id !== user.id) {
           console.error(`Authorization failed: User ${user.id} not participant in transaction ${transactionId}`);
+          await logAuditEvent(supabaseAdmin, user.id, transactionId, 'unauthorized_dispute_attempt', {}, req);
           return new Response(
             JSON.stringify({ success: false, error: 'Not authorized' }),
             { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -435,29 +511,7 @@ serve(async (req) => {
         }
 
         const sanitizedReason = sanitizeString(reason, 1000);
-        
-        const response = await fetch(`${baseUrl}/transactions/${transactionId}/dispute`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ reason: sanitizedReason })
-        });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Escrow API error (${response.status}):`, errorText);
-          return new Response(
-            JSON.stringify({ success: false, error: 'Failed to initiate dispute' }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        const result = await response.json();
-        console.log('Escrow API dispute initiated:', result);
-
-        // Update transaction status and dispute reason in database
         try {
           await retryDbOperation(async () => {
             const { error } = await supabaseAdmin
@@ -474,20 +528,29 @@ serve(async (req) => {
             }
           }, 'Database update (dispute)');
 
-          console.log('Transaction status updated to disputed:', transactionId);
+          await logAuditEvent(supabaseAdmin, user.id, transactionId, 'dispute_initiated', { reason: sanitizedReason }, req);
+
+          return new Response(JSON.stringify({
+            success: true,
+            message: 'Dispute initiated successfully'
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
 
         } catch (dbError) {
-          console.error('WARNING: Failed to update transaction status after dispute:', dbError);
-          // Continue anyway since dispute is filed
+          console.error('Failed to initiate dispute:', dbError);
+          await logAuditEvent(supabaseAdmin, user.id, transactionId, 'dispute_failed', { 
+            error: dbError.message 
+          }, req);
+          
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Failed to initiate dispute'
+          }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
-
-        return new Response(JSON.stringify({
-          success: true,
-          data: result,
-          message: 'Dispute initiated successfully'
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
       }
 
       case 'cancel': {
@@ -500,7 +563,6 @@ serve(async (req) => {
           );
         }
 
-        // Verify user is participant in the transaction
         const { data: transaction, error: txError } = await supabase
           .from('escrow_transactions')
           .select('buyer_id, seller_id')
@@ -517,33 +579,13 @@ serve(async (req) => {
 
         if (transaction.buyer_id !== user.id && transaction.seller_id !== user.id) {
           console.error(`Authorization failed: User ${user.id} not participant in transaction ${transactionId}`);
+          await logAuditEvent(supabaseAdmin, user.id, transactionId, 'unauthorized_cancel_attempt', {}, req);
           return new Response(
             JSON.stringify({ success: false, error: 'Not authorized' }),
             { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
-        
-        const response = await fetch(`${baseUrl}/transactions/${transactionId}/cancel`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          }
-        });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Escrow API error (${response.status}):`, errorText);
-          return new Response(
-            JSON.stringify({ success: false, error: 'Failed to cancel transaction' }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        const result = await response.json();
-        console.log('Escrow API transaction cancelled:', result);
-
-        // Update transaction status in database
         try {
           await retryDbOperation(async () => {
             const { error } = await supabaseAdmin
@@ -559,20 +601,29 @@ serve(async (req) => {
             }
           }, 'Database update (cancel)');
 
-          console.log('Transaction status updated to cancelled:', transactionId);
+          await logAuditEvent(supabaseAdmin, user.id, transactionId, 'transaction_cancelled', {}, req);
+
+          return new Response(JSON.stringify({
+            success: true,
+            message: 'Transaction cancelled successfully'
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
 
         } catch (dbError) {
-          console.error('WARNING: Failed to update transaction status after cancellation:', dbError);
-          // Continue anyway since cancellation succeeded
+          console.error('Failed to cancel transaction:', dbError);
+          await logAuditEvent(supabaseAdmin, user.id, transactionId, 'cancel_failed', { 
+            error: dbError.message 
+          }, req);
+          
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Failed to cancel transaction'
+          }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
-
-        return new Response(JSON.stringify({
-          success: true,
-          data: result,
-          message: 'Transaction cancelled successfully'
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
       }
 
       case 'user-transactions': {
@@ -585,38 +636,31 @@ serve(async (req) => {
           );
         }
 
-        // Authorization: Users can only view their own transactions
         if (user.id !== userId) {
-          console.error(`Authorization failed: User ${user.id} attempted to view transactions of user ${userId}`);
+          console.error(`Authorization failed: User ${user.id} attempted to access transactions for ${userId}`);
           return new Response(
             JSON.stringify({ success: false, error: 'Not authorized' }),
             { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
-        
-        const response = await fetch(`${baseUrl}/users/${userId}/transactions`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          }
-        });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Escrow API error (${response.status}):`, errorText);
+        const { data: transactions, error: fetchError } = await supabase
+          .from('escrow_transactions')
+          .select('*')
+          .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+          .order('created_at', { ascending: false });
+
+        if (fetchError) {
+          console.error('Failed to fetch transactions:', fetchError);
           return new Response(
-            JSON.stringify({ success: false, error: 'Failed to retrieve transactions' }),
+            JSON.stringify({ success: false, error: 'Failed to fetch transactions' }),
             { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
 
-        const result = await response.json();
-
         return new Response(JSON.stringify({
           success: true,
-          data: result.transactions || [],
-          message: 'Transactions retrieved successfully'
+          data: transactions
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -628,15 +672,14 @@ serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
     }
-
   } catch (error) {
     console.error('Edge function error:', error);
-    return new Response(JSON.stringify({
-      success: false,
-      error: 'An error occurred processing your request'
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error.message || 'Internal server error' 
+      }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 });

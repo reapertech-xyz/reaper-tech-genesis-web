@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { useEscrow } from "@/hooks/useEscrow";
 import { useCryptoEscrow } from "@/hooks/useCryptoEscrow";
@@ -19,6 +19,9 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Shield, DollarSign, Bitcoin, Wallet, RefreshCw } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { TierLimitAlert } from "./TierLimitAlert";
+import { VerificationPrompt } from "./VerificationPrompt";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreateEscrowFormProps {
   onSuccess?: () => void;
@@ -50,7 +53,37 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
   const [conversion, setConversion] = useState<string | null>(null);
   const [releaseConditions, setReleaseConditions] = useState<string[]>([]);
   const [customCondition, setCustomCondition] = useState("");
+  const [tierError, setTierError] = useState<{
+    currentTier: string;
+    tierLimit: number;
+    requestedAmount: number;
+  } | null>(null);
+  const [userReputation, setUserReputation] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
 
+  useEffect(() => {
+    const loadUserData = async () => {
+      const userId = user?.id || profile?.id;
+      if (!userId) return;
+
+      const { data: reputation } = await supabase
+        .from('user_reputation')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('verification_status')
+        .eq('id', userId)
+        .single();
+
+      setUserReputation(reputation);
+      setUserProfile(profileData);
+    };
+
+    loadUserData();
+  }, [user, profile]);
   const predefinedConditions = [
     "Item delivered as described",
     "Service completed satisfactorily",
@@ -115,6 +148,7 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setTierError(null);
 
     const userId = user?.id || profile?.id;
     if (!userId) {
@@ -135,21 +169,32 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
       return;
     }
 
-    const result = await createTransaction({
-      buyerId: userId,
-      sellerId: formData.sellerId,
-      amount: Number(formData.amount),
-      currency: formData.currency,
-      description: formData.description,
-      releaseConditions: releaseConditions.length > 0 ? releaseConditions : undefined,
-    });
-
-    if (result) {
-      toast({
-        title: "Escrow Created",
-        description: "Your secure escrow transaction has been initiated",
+    try {
+      const result = await createTransaction({
+        buyerId: userId,
+        sellerId: formData.sellerId,
+        amount: Number(formData.amount),
+        currency: formData.currency,
+        description: formData.description,
+        releaseConditions: releaseConditions.length > 0 ? releaseConditions : undefined,
       });
-      onSuccess?.();
+
+      if (result) {
+        toast({
+          title: "Escrow Created",
+          description: "Your secure escrow transaction has been initiated",
+        });
+        setTierError(null);
+        onSuccess?.();
+      }
+    } catch (error: any) {
+      if (error.tierInfo) {
+        setTierError({
+          currentTier: error.tierInfo.currentTier,
+          tierLimit: error.tierInfo.tierLimit,
+          requestedAmount: error.tierInfo.requestedAmount,
+        });
+      }
     }
   };
 
@@ -170,6 +215,22 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Verification Prompt */}
+      {userProfile && (
+        <VerificationPrompt
+          verificationStatus={userProfile.verification_status || 'unverified'}
+          currentTier={userReputation?.tier || 'Shadow Trader'}
+        />
+      )}
+
+      {/* Tier Limit Alert */}
+      {tierError && (
+        <TierLimitAlert
+          currentTier={tierError.currentTier}
+          tierLimit={tierError.tierLimit}
+          requestedAmount={tierError.requestedAmount}
+        />
+      )}
       {/* Payment Method Selection */}
       <div className="space-y-3">
         <Label className="text-base font-semibold flex items-center gap-2">

@@ -18,6 +18,7 @@ import Bookmarks from "./pages/Bookmarks";
 import SeedVault from "./pages/SeedVault";
 import EscrowDashboard from "./pages/EscrowDashboard";
 import DisputeDashboard from "./pages/admin/DisputeDashboard";
+import AuditLogDashboard from "./pages/admin/AuditLogDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/seedvault" element={<SeedVault />} />
             <Route path="/escrow" element={<EscrowDashboard />} />
             <Route path="/admin/disputes" element={<DisputeDashboard />} />
+            <Route path="/admin/audit-logs" element={<AuditLogDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
