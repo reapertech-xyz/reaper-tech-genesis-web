@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EscrowTransaction, EscrowStatus } from "@/types/escrow";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { useEscrow } from "@/hooks/useEscrow";
@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import DisputeForm from "./DisputeForm";
+import { ReviewForm } from "@/components/reviews/ReviewForm";
+import { UserProfileView } from "@/components/reputation/UserProfileView";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,10 +42,30 @@ const EscrowTransactionDetail = ({ transaction, onClose }: EscrowTransactionDeta
   const [showReleaseConfirm, setShowReleaseConfirm] = useState(false);
   const [showDisputeDialog, setShowDisputeDialog] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   const userId = user?.id || profile?.id;
   const isBuyer = userId === transaction.buyerId;
   const isSeller = userId === transaction.sellerId;
+
+  useEffect(() => {
+    // Check if current user has already reviewed this transaction
+    const checkReviewStatus = async () => {
+      if (transaction.status !== EscrowStatus.COMPLETED || !userId) return;
+
+      const { data } = await supabase
+        .from('transaction_reviews')
+        .select('id')
+        .eq('transaction_id', transaction.id)
+        .eq('reviewer_id', userId)
+        .maybeSingle();
+
+      setHasReviewed(!!data);
+    };
+
+    checkReviewStatus();
+  }, [transaction.id, transaction.status, userId]);
 
   const getStatusIcon = (status: EscrowStatus) => {
     switch (status) {
@@ -129,6 +151,15 @@ const EscrowTransactionDetail = ({ transaction, onClose }: EscrowTransactionDeta
   const canCancel = (isBuyer || isSeller) && [
     EscrowStatus.INITIATED
   ].includes(transaction.status);
+
+  const canReview = 
+    transaction.status === EscrowStatus.COMPLETED && 
+    !hasReviewed &&
+    userId &&
+    (isBuyer || isSeller);
+
+  const revieweeId = isBuyer ? transaction.sellerId : transaction.buyerId;
+  const revieweeName = isBuyer ? "Seller" : "Buyer";
 
   return (
     <div className="space-y-6">
@@ -272,10 +303,61 @@ const EscrowTransactionDetail = ({ transaction, onClose }: EscrowTransactionDeta
           </Button>
         )}
 
+        {canReview && (
+          <Button
+            onClick={() => setShowReviewForm(!showReviewForm)}
+            variant="secondary"
+            className="bg-cyan-600 hover:bg-cyan-700"
+          >
+            {showReviewForm ? 'Hide Review' : 'Leave a Review'}
+          </Button>
+        )}
+
         <Button onClick={onClose} variant="outline">
           Close
         </Button>
       </div>
+
+      {/* Review Form */}
+      {showReviewForm && canReview && (
+        <>
+          <Separator className="bg-gray-700" />
+          <ReviewForm
+            transactionId={transaction.id}
+            reviewerId={userId!}
+            revieweeId={revieweeId}
+            revieweeName={revieweeName}
+            onReviewSubmitted={() => {
+              setShowReviewForm(false);
+              setHasReviewed(true);
+              toast({
+                title: "Review Submitted",
+                description: "Thank you for your feedback! Reputation scores have been updated."
+              });
+            }}
+          />
+        </>
+      )}
+
+      {/* Transaction Participants - Show after completion */}
+      {transaction.status === EscrowStatus.COMPLETED && (
+        <>
+          <Separator className="bg-gray-700" />
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-100">Transaction Participants</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <p className="text-sm text-gray-400 mb-2">Buyer</p>
+                <UserProfileView userId={transaction.buyerId} showFullStats={false} />
+              </div>
+              <div>
+                <p className="text-sm text-gray-400 mb-2">Seller</p>
+                <UserProfileView userId={transaction.sellerId} showFullStats={false} />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Release Funds Confirmation */}
       <AlertDialog open={showReleaseConfirm} onOpenChange={setShowReleaseConfirm}>
