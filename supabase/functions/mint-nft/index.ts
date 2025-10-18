@@ -127,10 +127,27 @@ serve(async (req) => {
       );
     }
 
-    // Authorization check - verify user has permission to mint
-    // For now, we'll allow authenticated users to mint
-    // In production, you should check user roles or permissions here
-    console.log(`User ${user.id} initiating NFT mint to address: ${address}`);
+    // Authorization check - verify user has minting permission
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    const { data: hasMinterRole } = await supabaseAdmin
+      .rpc('has_role', { _user_id: user.id, _role: 'minter' });
+
+    const { data: hasAdminRole } = await supabaseAdmin
+      .rpc('has_role', { _user_id: user.id, _role: 'admin' });
+
+    if (!hasMinterRole && !hasAdminRole) {
+      console.error('User lacks minting permissions');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Insufficient permissions to mint NFTs' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`User ${user.id} authorized for minting, proceeding`);
 
     const sdk = new ThirdwebSDK("sepolia", {
       secretKey: THIRDWEB_SECRET_KEY,

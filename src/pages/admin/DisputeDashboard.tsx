@@ -52,28 +52,46 @@ const DisputeDashboard = () => {
   const [resolution, setResolution] = useState<'buyer' | 'seller' | 'partial' | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-  // Check if user is admin (in production, check from database roles table)
-  const isAdmin = profile?.email === 'admin@reapertech.com'; // Temporary check
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [checkingRole, setCheckingRole] = useState(true);
 
   useEffect(() => {
-    if (!user && !profile) {
-      navigate("/auth");
-      return;
-    }
+    const checkAdminRole = async () => {
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
 
-    if (!isAdmin) {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access the admin dashboard",
-        variant: "destructive",
-      });
-      navigate("/");
-      return;
-    }
+      const { data, error } = await supabase
+        .rpc('has_role', { _user_id: user.id, _role: 'admin' });
 
-    loadDisputes();
-  }, [user, profile, navigate, isAdmin]);
+      if (error) {
+        console.error('Error checking admin role:', error);
+        setCheckingRole(false);
+        return;
+      }
+
+      setIsAdmin(data || false);
+      setCheckingRole(false);
+
+      if (!data) {
+        toast({
+          title: "Access Denied",
+          description: "Only administrators can access this page",
+          variant: "destructive"
+        });
+        navigate("/");
+      }
+    };
+
+    checkAdminRole();
+  }, [user, navigate, toast]);
+
+  useEffect(() => {
+    if (!checkingRole && isAdmin) {
+      loadDisputes();
+    }
+  }, [checkingRole, isAdmin]);
 
   const loadDisputes = async () => {
     setLoading(true);

@@ -10,7 +10,6 @@ interface UserProfile {
   id: string;
   username?: string;
   avatar_url?: string;
-  email?: string;
 }
 
 interface UserReputation {
@@ -37,7 +36,7 @@ export const UserProfileView = ({ userId, showFullStats = true }: UserProfileVie
         // Fetch profile
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select('id, username, avatar_url, email')
+          .select('id, username, avatar_url')
           .eq('id', userId)
           .single();
 
@@ -100,13 +99,13 @@ export const UserProfileView = ({ userId, showFullStats = true }: UserProfileVie
         <Avatar className="w-16 h-16">
           <AvatarImage src={profile.avatar_url} />
           <AvatarFallback>
-            {profile.username?.[0]?.toUpperCase() || profile.email?.[0]?.toUpperCase() || 'U'}
+            {profile.username?.[0]?.toUpperCase() || 'U'}
           </AvatarFallback>
         </Avatar>
 
         <div className="flex-1">
           <h3 className="text-xl font-bold mb-2">
-            {profile.username || profile.email || 'Anonymous User'}
+            {profile.username || 'Anonymous User'}
           </h3>
 
           <div className="mb-3">

@@ -28,11 +28,35 @@ export default function AuditLogDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const { user } = useAuth();
   const { toast } = useToast();
-
-  // Check if user is admin (you should implement proper role-based access)
-  const isAdmin = user?.email === 'admin@reapertech.com';
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [checkingRole, setCheckingRole] = useState(true);
 
   useEffect(() => {
+    const checkAdminRole = async () => {
+      if (!user) {
+        setCheckingRole(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .rpc('has_role', { _user_id: user.id, _role: 'admin' });
+
+      if (error) {
+        console.error('Error checking admin role:', error);
+        setCheckingRole(false);
+        return;
+      }
+
+      setIsAdmin(data || false);
+      setCheckingRole(false);
+    };
+
+    checkAdminRole();
+  }, [user]);
+
+  useEffect(() => {
+    if (checkingRole) return;
+
     if (!isAdmin) {
       toast({
         title: "Access Denied",
@@ -43,7 +67,7 @@ export default function AuditLogDashboard() {
     }
 
     loadAuditLogs();
-  }, [isAdmin]);
+  }, [isAdmin, checkingRole, toast]);
 
   useEffect(() => {
     if (searchTerm) {
