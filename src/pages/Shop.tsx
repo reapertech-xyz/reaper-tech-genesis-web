@@ -3,8 +3,11 @@ import Footer from "@/components/Footer";
 import ThiingsIcon from "@/components/ThiingsIcon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useState } from "react";
+import { Shield, ShoppingCart } from "lucide-react";
+import CreateEscrowForm from "@/components/escrow/CreateEscrowForm";
+import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 
 interface CartItem {
   id: string;
@@ -15,6 +18,9 @@ interface CartItem {
 
 const Shop = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [escrowDialogOpen, setEscrowDialogOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<typeof products[0] | null>(null);
+  const { user, profile } = useUnifiedAuth();
   
   const products = [
     {
@@ -141,6 +147,15 @@ const Shop = () => {
     window.location.href = '/cart';
   };
 
+  const handleBuyWithEscrow = (product: typeof products[0]) => {
+    if (!user && !profile) {
+      window.location.href = '/auth';
+      return;
+    }
+    setSelectedProduct(product);
+    setEscrowDialogOpen(true);
+  };
+
   const ImageGallery = ({ images, title }: { images: string[], title: string }) => {
     if (images.length === 0) return null;
 
@@ -246,12 +261,23 @@ const Shop = () => {
                 <p className="text-gray-300 leading-relaxed mb-4">
                   {product.description}
                 </p>
-                <Button 
-                  onClick={() => handleAddToCart(product)}
-                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
-                >
-                  Add to Cart
-                </Button>
+                <div className="space-y-2">
+                  <Button 
+                    onClick={() => handleAddToCart(product)}
+                    className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
+                  >
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    Add to Cart
+                  </Button>
+                  <Button 
+                    onClick={() => handleBuyWithEscrow(product)}
+                    variant="outline"
+                    className="w-full border-green-500 text-green-400 hover:bg-green-500/10 font-mono"
+                  >
+                    <Shield className="mr-2 h-4 w-4" />
+                    Buy with Escrow Protection
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -294,6 +320,30 @@ const Shop = () => {
       </main>
       
       <Footer />
+
+      {/* Escrow Purchase Dialog */}
+      <Dialog open={escrowDialogOpen} onOpenChange={setEscrowDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Buy with Escrow Protection</DialogTitle>
+            <DialogDescription>
+              Secure your purchase with escrow - funds are held until you confirm receipt
+            </DialogDescription>
+          </DialogHeader>
+          {selectedProduct && (
+            <CreateEscrowForm
+              onSuccess={() => {
+                setEscrowDialogOpen(false);
+                setSelectedProduct(null);
+              }}
+              prefillData={{
+                amount: selectedProduct.price,
+                description: `Purchase: ${typeof selectedProduct.title === 'string' ? selectedProduct.title : selectedProduct.id}`,
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
