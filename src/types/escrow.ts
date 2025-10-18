@@ -13,6 +13,7 @@ export interface EscrowTransaction {
   mediatorId?: string;
   crypto_currency?: string;
   crypto_details?: any;
+  listing_id?: string;
 }
 
 export enum EscrowStatus {

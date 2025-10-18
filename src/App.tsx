@@ -17,6 +17,7 @@ import Auth from "./pages/Auth";
 import Bookmarks from "./pages/Bookmarks";
 import SeedVault from "./pages/SeedVault";
 import EscrowDashboard from "./pages/EscrowDashboard";
+import DisputeDashboard from "./pages/admin/DisputeDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/bookmarks" element={<Bookmarks />} />
             <Route path="/seedvault" element={<SeedVault />} />
             <Route path="/escrow" element={<EscrowDashboard />} />
+            <Route path="/admin/disputes" element={<DisputeDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

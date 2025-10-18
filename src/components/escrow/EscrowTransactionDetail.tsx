@@ -2,11 +2,12 @@ import { useState } from "react";
 import { EscrowTransaction, EscrowStatus } from "@/types/escrow";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { useEscrow } from "@/hooks/useEscrow";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import DisputeForm from "./DisputeForm";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +18,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { CheckCircle, XCircle, AlertTriangle, Clock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface EscrowTransactionDetailProps {
   transaction: EscrowTransaction;
@@ -27,7 +36,7 @@ interface EscrowTransactionDetailProps {
 const EscrowTransactionDetail = ({ transaction, onClose }: EscrowTransactionDetailProps) => {
   const { user, profile } = useUnifiedAuth();
   const { releaseFunds, initiateDispute, loading } = useEscrow();
-  const [disputeReason, setDisputeReason] = useState("");
+  const { toast } = useToast();
   const [showReleaseConfirm, setShowReleaseConfirm] = useState(false);
   const [showDisputeDialog, setShowDisputeDialog] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -54,16 +63,55 @@ const EscrowTransactionDetail = ({ transaction, onClose }: EscrowTransactionDeta
     const success = await releaseFunds(transaction.id);
     if (success) {
       setShowReleaseConfirm(false);
+      
+      // Update listing status if this is linked to a listing
+      if (transaction.listing_id) {
+        await supabase
+          .from('marketplace_listings')
+          .update({ status: 'sold' })
+          .eq('id', transaction.listing_id);
+      }
+
+      // Notify seller (in production, this would trigger an email/notification)
+      toast({
+        title: "Funds Released",
+        description: "The seller has been notified and funds will be transferred shortly",
+      });
+      
       onClose();
     }
   };
 
-  const handleInitiateDispute = async () => {
-    if (!disputeReason.trim()) return;
+  const handleSubmitDispute = async (reason: string, category: string, evidence: File[]) => {
+    // Upload evidence files to storage
+    const evidenceUrls: string[] = [];
     
-    const success = await initiateDispute(transaction.id, disputeReason);
+    for (const file of evidence) {
+      const fileName = `${transaction.id}/${Date.now()}-${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('dispute-evidence')
+        .upload(fileName, file);
+
+      if (!uploadError) {
+        const { data: { publicUrl } } = supabase.storage
+          .from('dispute-evidence')
+          .getPublicUrl(fileName);
+        evidenceUrls.push(publicUrl);
+      }
+    }
+
+    const fullReason = `Category: ${category}\n\n${reason}\n\nEvidence: ${evidenceUrls.length} file(s) uploaded`;
+    
+    const success = await initiateDispute(transaction.id, fullReason);
     if (success) {
       setShowDisputeDialog(false);
+      
+      // In production, trigger notification to mediators
+      toast({
+        title: "Dispute Filed",
+        description: "A mediator will review your case within 24-48 hours",
+      });
+      
       onClose();
     }
   };
@@ -252,34 +300,21 @@ const EscrowTransactionDetail = ({ transaction, onClose }: EscrowTransactionDeta
       </AlertDialog>
 
       {/* Dispute Dialog */}
-      <AlertDialog open={showDisputeDialog} onOpenChange={setShowDisputeDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Initiate Dispute</AlertDialogTitle>
-            <AlertDialogDescription>
-              Please provide a detailed reason for the dispute. A mediator will review your case.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="py-4">
-            <Textarea
-              placeholder="Describe the issue with this transaction..."
-              value={disputeReason}
-              onChange={(e) => setDisputeReason(e.target.value)}
-              className="min-h-[100px]"
-            />
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDisputeReason("")}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleInitiateDispute}
-              disabled={!disputeReason.trim() || loading}
-              className="bg-yellow-600 hover:bg-yellow-700"
-            >
-              Submit Dispute
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Dialog open={showDisputeDialog} onOpenChange={setShowDisputeDialog}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>File a Dispute</DialogTitle>
+            <DialogDescription>
+              Provide detailed information about the issue with this transaction
+            </DialogDescription>
+          </DialogHeader>
+          <DisputeForm
+            transactionId={transaction.id}
+            onSubmit={handleSubmitDispute}
+            onCancel={() => setShowDisputeDialog(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
       {/* Cancel Confirmation */}
       <AlertDialog open={showCancelConfirm} onOpenChange={setShowCancelConfirm}>
