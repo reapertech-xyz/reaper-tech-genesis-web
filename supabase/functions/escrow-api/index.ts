@@ -1,6 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+// Database operation retry configuration
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 500;
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -34,6 +38,32 @@ const sanitizeString = (str: string, maxLength: number): string => {
   return str.slice(0, maxLength).trim();
 };
 
+// Database operation with retry logic
+async function retryDbOperation<T>(
+  operation: () => Promise<T>,
+  operationName: string
+): Promise<T> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      console.log(`${operationName}: Attempt ${attempt}/${MAX_RETRIES}`);
+      return await operation();
+    } catch (error) {
+      lastError = error as Error;
+      console.error(`${operationName} failed (attempt ${attempt}/${MAX_RETRIES}):`, error);
+      
+      if (attempt < MAX_RETRIES) {
+        const delay = RETRY_DELAY_MS * attempt;
+        console.log(`Retrying ${operationName} in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  
+  throw new Error(`${operationName} failed after ${MAX_RETRIES} attempts: ${lastError?.message}`);
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -52,10 +82,15 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
+    // Client for auth checks
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: { headers: { Authorization: authHeader } }
     });
+
+    // Admin client for database operations (bypasses RLS)
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
@@ -156,15 +191,62 @@ serve(async (req) => {
         }
 
         const result = await response.json();
-        console.log('Escrow transaction created successfully');
+        console.log('Escrow API transaction created:', result);
 
-        return new Response(JSON.stringify({
-          success: true,
-          data: result,
-          message: 'Escrow transaction created successfully'
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        // Store transaction in database with retry logic
+        try {
+          const dbTransaction = await retryDbOperation(async () => {
+            const { data, error } = await supabaseAdmin
+              .from('escrow_transactions')
+              .insert({
+                buyer_id: buyerId,
+                seller_id: sellerId,
+                amount: amount,
+                currency: currency.toUpperCase(),
+                status: 'initiated',
+                escrow_transaction_id: result.id || result.transaction_id,
+                release_conditions: releaseConditions || null,
+                crypto_details: data.cryptoDetails || null,
+              })
+              .select()
+              .single();
+
+            if (error) {
+              throw new Error(`Database insert failed: ${error.message}`);
+            }
+
+            return data;
+          }, 'Database insert');
+
+          console.log('Transaction stored in database:', dbTransaction.id);
+
+          return new Response(JSON.stringify({
+            success: true,
+            data: {
+              ...result,
+              localTransactionId: dbTransaction.id
+            },
+            message: 'Escrow transaction created successfully'
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+
+        } catch (dbError) {
+          console.error('CRITICAL: Database storage failed after successful API call:', dbError);
+          
+          // TODO: Implement compensation logic to cancel the Escrow.com transaction
+          // For now, log the orphaned transaction
+          console.error(`ORPHANED TRANSACTION: Escrow.com ID ${result.id}, buyer ${buyerId}, seller ${sellerId}`);
+          
+          return new Response(JSON.stringify({
+            success: false,
+            error: 'Transaction created but database sync failed. Please contact support.',
+            escrowTransactionId: result.id
+          }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
       }
 
       case 'get': {
@@ -278,6 +360,30 @@ serve(async (req) => {
         }
 
         const result = await response.json();
+        console.log('Escrow API funds released:', result);
+
+        // Update transaction status in database
+        try {
+          await retryDbOperation(async () => {
+            const { error } = await supabaseAdmin
+              .from('escrow_transactions')
+              .update({
+                status: 'completed',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', transactionId);
+
+            if (error) {
+              throw new Error(`Database update failed: ${error.message}`);
+            }
+          }, 'Database update (release)');
+
+          console.log('Transaction status updated to completed:', transactionId);
+
+        } catch (dbError) {
+          console.error('WARNING: Failed to update transaction status after release:', dbError);
+          // Continue anyway since funds are released
+        }
 
         return new Response(JSON.stringify({
           success: true,
@@ -349,6 +455,31 @@ serve(async (req) => {
         }
 
         const result = await response.json();
+        console.log('Escrow API dispute initiated:', result);
+
+        // Update transaction status and dispute reason in database
+        try {
+          await retryDbOperation(async () => {
+            const { error } = await supabaseAdmin
+              .from('escrow_transactions')
+              .update({
+                status: 'disputed',
+                dispute_reason: sanitizedReason,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', transactionId);
+
+            if (error) {
+              throw new Error(`Database update failed: ${error.message}`);
+            }
+          }, 'Database update (dispute)');
+
+          console.log('Transaction status updated to disputed:', transactionId);
+
+        } catch (dbError) {
+          console.error('WARNING: Failed to update transaction status after dispute:', dbError);
+          // Continue anyway since dispute is filed
+        }
 
         return new Response(JSON.stringify({
           success: true,
@@ -410,6 +541,30 @@ serve(async (req) => {
         }
 
         const result = await response.json();
+        console.log('Escrow API transaction cancelled:', result);
+
+        // Update transaction status in database
+        try {
+          await retryDbOperation(async () => {
+            const { error } = await supabaseAdmin
+              .from('escrow_transactions')
+              .update({
+                status: 'cancelled',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', transactionId);
+
+            if (error) {
+              throw new Error(`Database update failed: ${error.message}`);
+            }
+          }, 'Database update (cancel)');
+
+          console.log('Transaction status updated to cancelled:', transactionId);
+
+        } catch (dbError) {
+          console.error('WARNING: Failed to update transaction status after cancellation:', dbError);
+          // Continue anyway since cancellation succeeded
+        }
 
         return new Response(JSON.stringify({
           success: true,
