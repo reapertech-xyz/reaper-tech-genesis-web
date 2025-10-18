@@ -45,10 +45,16 @@ const Header = ({ title }: HeaderProps) => {
             Ledger Fields
           </Link>
           {(user || profile) && (
-            <Link to="/bookmarks" className="text-gray-300 hover:text-cyan-400 font-mono flex items-center">
-              <ThiingsIcon name="star3D" size={16} className="mr-1" />
-              Bookmarks
-            </Link>
+            <>
+              <Link to="/bookmarks" className="text-gray-300 hover:text-cyan-400 font-mono flex items-center">
+                <ThiingsIcon name="star3D" size={16} className="mr-1" />
+                Bookmarks
+              </Link>
+              <Link to="/escrow" className="text-gray-300 hover:text-cyan-400 font-mono flex items-center">
+                <ThiingsIcon name="shield3D" size={16} className="mr-1" />
+                Escrow
+              </Link>
+            </>
           )}
           <Link to="/cart" className="text-gray-300 hover:text-cyan-400 font-mono flex items-center">
             <ThiingsIcon name="box3D" size={16} className="mr-1" />
@@ -111,10 +117,16 @@ const Header = ({ title }: HeaderProps) => {
             Ledger Fields
           </Link>
           {(user || profile) && (
-            <Link to="/bookmarks" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">
-              <ThiingsIcon name="star3D" size={16} className="mr-2" />
-              Bookmarks
-            </Link>
+            <>
+              <Link to="/bookmarks" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">
+                <ThiingsIcon name="star3D" size={16} className="mr-2" />
+                Bookmarks
+              </Link>
+              <Link to="/escrow" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">
+                <ThiingsIcon name="shield3D" size={16} className="mr-2" />
+                Escrow
+              </Link>
+            </>
           )}
           <Link to="/cart" className="block text-gray-300 hover:text-cyan-400 font-mono py-2 flex items-center">
             <ThiingsIcon name="box3D" size={16} className="mr-2" />
