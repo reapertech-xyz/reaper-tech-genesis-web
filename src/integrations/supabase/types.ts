@@ -206,7 +206,10 @@ export type Database = {
           id: string
           updated_at: string
           username: string | null
+          verification_completed_at: string | null
           verification_data: Json | null
+          verification_initiated_at: string | null
+          verification_inquiry_id: string | null
           verification_status: string | null
           verified_at: string | null
           wallet_address: string | null
@@ -218,7 +221,10 @@ export type Database = {
           id: string
           updated_at?: string
           username?: string | null
+          verification_completed_at?: string | null
           verification_data?: Json | null
+          verification_initiated_at?: string | null
+          verification_inquiry_id?: string | null
           verification_status?: string | null
           verified_at?: string | null
           wallet_address?: string | null
@@ -230,7 +236,10 @@ export type Database = {
           id?: string
           updated_at?: string
           username?: string | null
+          verification_completed_at?: string | null
           verification_data?: Json | null
+          verification_initiated_at?: string | null
+          verification_inquiry_id?: string | null
           verification_status?: string | null
           verified_at?: string | null
           wallet_address?: string | null

@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ShieldCheck, CheckCircle2, AlertCircle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { PersonaVerificationFlow } from "@/components/verification/PersonaVerificationFlow";
 
 interface VerificationPromptProps {
   verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
@@ -15,14 +17,14 @@ export const VerificationPrompt = ({
   currentTier,
   onStartVerification 
 }: VerificationPromptProps) => {
-  const { toast } = useToast();
+  const [showVerificationDialog, setShowVerificationDialog] = useState(false);
 
   const handleStartVerification = () => {
-    // This would integrate with Stripe Identity, Persona, or similar service
-    toast({
-      title: "KYC Verification",
-      description: "Identity verification integration coming soon. This will enable higher transaction limits.",
-    });
+    setShowVerificationDialog(true);
+  };
+
+  const handleVerificationComplete = () => {
+    setShowVerificationDialog(false);
     onStartVerification?.();
   };
 
@@ -101,6 +103,18 @@ export const VerificationPrompt = ({
           </Button>
         )}
       </CardContent>
+
+      <Dialog open={showVerificationDialog} onOpenChange={setShowVerificationDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Identity Verification</DialogTitle>
+          </DialogHeader>
+          <PersonaVerificationFlow
+            onComplete={handleVerificationComplete}
+            onCancel={() => setShowVerificationDialog(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
