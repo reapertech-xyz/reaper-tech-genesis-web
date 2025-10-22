@@ -336,6 +336,13 @@ export const iconMappings: Record<string, string> = {
   documentSearch: "/src/ThiingsIcons/document-text-search.png",
   paperFolder: "/src/ThiingsIcons/paper-with-folder-3d-icon.png",
   invoiceAmount: "/src/ThiingsIcons/invoice-amount-paid.png",
+  
+  // PLACEHOLDER MAPPINGS (using existing icons until custom icons are added)
+  market3D: "/src/ThiingsIcons/Fantasy-Alchemy-Shop-Counter-And-Shelves-With-Potions-Books-Crystals.png",
+  purpleCatMystic: "/src/ThiingsIcons/black-cat-yellow-eyes.png",
+  orangeCatTech: "/src/ThiingsIcons/black-cat-yellow-eyes.png",
+  blueCatHeart: "/src/ThiingsIcons/black-cat-yellow-eyes.png",
+  yellowCatSun: "/src/ThiingsIcons/black-cat-yellow-eyes.png",
   invoicePaid: "/src/ThiingsIcons/invoice-paid-stamp.png",
   passwordLock: "/src/ThiingsIcons/padlock-password-icon.png",
   policyDocument: "/src/ThiingsIcons/policy-document-lock.png",
