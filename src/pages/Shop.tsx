@@ -318,7 +318,7 @@ const Shop = () => {
                       </Select>
                     </div>
                   ) : (
-                    <p className="text-gray-400 text-sm">{product.subtitle}</p>
+                    <p className="text-gray-400 text-sm pb-2">{product.subtitle}</p>
                   )}
                   <p className="text-cyan-300 font-mono text-sm italic">{product.style}</p>
                 </CardHeader>
