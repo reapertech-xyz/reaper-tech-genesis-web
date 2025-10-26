@@ -296,7 +296,7 @@ const Shop = () => {
                     ${currentPrice.toFixed(2)}
                   </CardDescription>
                   {hasLengthOptions ? (
-                    <div className="mt-2">
+                    <div className="mt-2 pb-2">
                       <Select 
                         value={selectedLength || undefined}
                         onValueChange={(value) => setSelectedLengths(prev => ({ ...prev, [product.id]: value }))}
