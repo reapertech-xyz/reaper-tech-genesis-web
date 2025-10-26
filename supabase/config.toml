@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.persona-verification]
 verify_jwt = true
+
+[functions.admin-resolve-dispute]
+verify_jwt = true

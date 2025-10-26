@@ -126,22 +126,20 @@ const DisputeDashboard = () => {
     if (!selectedDispute || !resolution) return;
 
     try {
-      // In production, this would call an admin-only edge function
-      const newStatus = resolution === 'buyer' ? 'refunded' : 'completed';
-      
-      const { error } = await supabase
-        .from('escrow_transactions')
-        .update({
-          status: newStatus,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', selectedDispute.id);
+      // Call admin-only edge function for server-side validation
+      const { data, error } = await supabase.functions.invoke('admin-resolve-dispute', {
+        body: {
+          transactionId: selectedDispute.id,
+          resolution,
+          notes: resolutionNotes,
+        },
+      });
 
       if (error) throw error;
 
       toast({
         title: "Dispute Resolved",
-        description: `Funds ${resolution === 'buyer' ? 'refunded to buyer' : 'released to seller'}`,
+        description: data.message || `Funds ${resolution === 'buyer' ? 'refunded to buyer' : 'released to seller'}`,
       });
 
       setShowConfirmDialog(false);
@@ -153,7 +151,7 @@ const DisputeDashboard = () => {
       console.error('Error resolving dispute:', error);
       toast({
         title: "Error",
-        description: "Failed to resolve dispute",
+        description: "Failed to resolve dispute. Admin access required.",
         variant: "destructive",
       });
     }

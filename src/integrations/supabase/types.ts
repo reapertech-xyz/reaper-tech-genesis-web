@@ -404,10 +404,7 @@ export type Database = {
         Args: { _amount: number; _user_id: string }
         Returns: Json
       }
-      get_decrypted_email: {
-        Args: { profile_id: string }
-        Returns: string
-      }
+      get_decrypted_email: { Args: { profile_id: string }; Returns: string }
       get_or_create_wallet_profile: {
         Args: { _wallet_address: string }
         Returns: string
