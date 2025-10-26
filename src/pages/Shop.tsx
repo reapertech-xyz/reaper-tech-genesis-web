@@ -272,7 +272,7 @@ const Shop = () => {
                   <Button 
                     onClick={() => handleBuyWithEscrow(product)}
                     variant="outline"
-                    className="w-full border-green-500 text-green-400 hover:bg-green-500/10 font-mono"
+                    className="w-full border-gray-700 text-white hover:bg-gray-700/10 font-mono"
                   >
                     <Shield className="mr-2 h-4 w-4" />
                     Buy with Escrow Protection
