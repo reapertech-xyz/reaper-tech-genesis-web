@@ -309,14 +309,14 @@ export const iconMappings: Record<string, string> = {
   invoiceAmount: "/ThiingsIcons/invoice-amount-paid.png",
   
   // PLACEHOLDER MAPPINGS (using existing icons until custom icons are added)
-  market3D: "/src/ThiingsIcons/Fantasy-Alchemy-Shop-Counter-And-Shelves-With-Potions-Books-Crystals.png",
-  purpleCatMystic: "/src/ThiingsIcons/black-cat-yellow-eyes.png",
-  orangeCatTech: "/src/ThiingsIcons/black-cat-yellow-eyes.png",
-  blueCatHeart: "/src/ThiingsIcons/black-cat-yellow-eyes.png",
-  yellowCatSun: "/src/ThiingsIcons/black-cat-yellow-eyes.png",
-  invoicePaid: "/src/ThiingsIcons/invoice-paid-stamp.png",
-  passwordLock: "/src/ThiingsIcons/padlock-password-icon.png",
-  policyDocument: "/src/ThiingsIcons/policy-document-lock.png",
+  market3D: "/ThiingsIcons/Fantasy-Alchemy-Shop-Counter-And-Shelves-With-Potions-Books-Crystals.png",
+  purpleCatMystic: "/ThiingsIcons/black-cat-yellow-eyes.png",
+  orangeCatTech: "/ThiingsIcons/black-cat-yellow-eyes.png",
+  blueCatHeart: "/ThiingsIcons/black-cat-yellow-eyes.png",
+  yellowCatSun: "/ThiingsIcons/black-cat-yellow-eyes.png",
+  invoicePaid: "/ThiingsIcons/invoice-paid-stamp.png",
+  passwordLock: "/ThiingsIcons/padlock-password-icon.png",
+  policyDocument: "/ThiingsIcons/policy-document-lock.png",
   securePolicy: "/ThiingsIcons/secure-policy.png",
   cybersecurityLock: "/ThiingsIcons/cybersecurity-lock-monitor.png",
   
