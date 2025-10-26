@@ -4,6 +4,7 @@ import ThiingsIcon from "@/components/ThiingsIcon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { Shield, ShoppingCart } from "lucide-react";
 import CreateEscrowForm from "@/components/escrow/CreateEscrowForm";
@@ -14,49 +15,61 @@ interface CartItem {
   name: string;
   price: number;
   qty: number;
+  length?: string;
+}
+
+interface LengthOption {
+  length: string;
+  price: number;
 }
 
 const Shop = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [escrowDialogOpen, setEscrowDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<typeof products[0] | null>(null);
+  const [selectedLengths, setSelectedLengths] = useState<Record<string, string>>({});
   const { user, profile } = useUnifiedAuth();
   
   const products = [
     {
       id: "usb-c-to-usb-c",
       title: <><ThiingsIcon name="usbCable" size={16} className="mr-2" />USB-C to USB-C Cable</>,
-      prices: "$6 / $8 / $10",
-      subtitle: "3ft / 6ft / 10ft",
       style: "Braided, Durable, PD-Ready",
       description: "For when power meets purpose. Charge your Android, iPad, MacBook, Steam Deck, or future-self with this high-speed link. Braided to survive life's tangles — fast enough to keep up with yours.",
       images: [],
-      price: 8
+      lengthOptions: [
+        { length: "3ft", price: 6 },
+        { length: "6ft", price: 8 },
+        { length: "10ft", price: 10 }
+      ]
     },
     {
       id: "usb-c-to-usb-a",
       title: <><ThiingsIcon name="cable" size={16} className="mr-2" />USB-C to USB-A Cable</>,
-      prices: "$5 / $7 / $9",
-      subtitle: "3ft / 6ft / 10ft",
       style: "Classic Sync & Charge",
       description: "Because not everything old is obsolete. Bridge the past and present with this classic combo — your USB-A chargers still have work to do, and this cord makes sure they're still invited to the party.",
       images: [],
-      price: 7
+      lengthOptions: [
+        { length: "3ft", price: 5 },
+        { length: "6ft", price: 7 },
+        { length: "10ft", price: 9 }
+      ]
     },
     {
       id: "usb-c-to-lightning",
       title: <><ThiingsIcon name="smartphone3D" size={16} className="mr-2" />USB-C to Lightning Cable</>,
-      prices: "$8 / $10 / $12",
-      subtitle: "3ft / 6ft / 10ft",
       style: "Apple MFi Certified",
       description: "A cord for the Apple-inclined. Whether you're juicing up your iPhone, AirPods, or memories — this one does it fast, clean, and with reverence for the cult of Cupertino.",
       images: [],
-      price: 10
+      lengthOptions: [
+        { length: "3ft", price: 8 },
+        { length: "6ft", price: 10 },
+        { length: "10ft", price: 12 }
+      ]
     },
     {
       id: "20w-dual-adapter",
       title: <><ThiingsIcon name="plug3D" size={16} className="mr-2" />20W USB-A + USB-C Wall Adapter</>,
-      prices: "$10",
       subtitle: "Dual Output: 1x USB-C PD + 1x USB-A QC",
       style: "Perfect power, twin-born.",
       description: "One port for the future, one for the friends you haven't upgraded yet. Compact. Travel-proof. Non-negotiably useful.",
@@ -72,7 +85,6 @@ const Shop = () => {
     {
       id: "65w-laptop-charger",
       title: <><ThiingsIcon name="charger" size={16} className="mr-2" />65W USB-C Laptop Charger Block</>,
-      prices: "$32.50",
       subtitle: "Single Port: USB-C PD 3.0",
       style: "For your MacBook, iPad Pro, Chromebook, Steam Deck, or anything else that breathes in watts.",
       description: "This is the block that doesn't break — small enough to pocket, powerful enough to resurrect.",
@@ -88,7 +100,6 @@ const Shop = () => {
     {
       id: "100w-hub-charger",
       title: <><ThiingsIcon name="network" size={16} className="mr-2" />100W 4-Port USB Hub Charger</>,
-      prices: "$50.00",
       subtitle: "Ports: 3x USB-C + 1x USB-A",
       style: "Charge your world. All at once.",
       description: "Designed for desks, co-working rituals, or traveling shamans. Share the current with up to four devices — fast, safe, and without judgment.",
@@ -103,12 +114,27 @@ const Shop = () => {
     }
   ];
 
+  const getProductPrice = (product: typeof products[0]) => {
+    if ('lengthOptions' in product) {
+      const selectedLength = selectedLengths[product.id] || product.lengthOptions[1].length;
+      const option = product.lengthOptions.find(opt => opt.length === selectedLength);
+      return option?.price || product.lengthOptions[1].price;
+    }
+    return product.price;
+  };
+
   const addToCart = (product: typeof products[0]) => {
+    const price = getProductPrice(product);
+    const length = 'lengthOptions' in product ? (selectedLengths[product.id] || product.lengthOptions[1].length) : undefined;
+    const itemKey = length ? `${product.id}-${length}` : product.id;
+    
     setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === product.id);
+      const existingItem = prevCart.find(item => 
+        item.id === product.id && item.length === length
+      );
       if (existingItem) {
         return prevCart.map(item =>
-          item.id === product.id
+          item.id === product.id && item.length === length
             ? { ...item, qty: item.qty + 1 }
             : item
         );
@@ -116,8 +142,9 @@ const Shop = () => {
       return [...prevCart, {
         id: product.id,
         name: typeof product.title === 'string' ? product.title : product.id,
-        price: product.price,
-        qty: 1
+        price,
+        qty: 1,
+        length
       }];
     });
   };
@@ -125,17 +152,24 @@ const Shop = () => {
   const handleAddToCart = (product: typeof products[0]) => {
     console.log("Adding to cart:", product.title);
     addToCart(product);
+    
     // Store cart in localStorage for persistence
+    const price = getProductPrice(product);
+    const length = 'lengthOptions' in product ? (selectedLengths[product.id] || product.lengthOptions[1].length) : undefined;
     const updatedCart = [...cart];
-    const existingItemIndex = updatedCart.findIndex(item => item.id === product.id);
+    const existingItemIndex = updatedCart.findIndex(item => 
+      item.id === product.id && item.length === length
+    );
+    
     if (existingItemIndex >= 0) {
       updatedCart[existingItemIndex].qty += 1;
     } else {
       updatedCart.push({
         id: product.id,
         name: typeof product.title === 'string' ? product.title : product.id,
-        price: product.price,
-        qty: 1
+        price,
+        qty: 1,
+        length
       });
     }
     localStorage.setItem('reaper-cart', JSON.stringify(updatedCart));
@@ -152,7 +186,10 @@ const Shop = () => {
       window.location.href = '/auth';
       return;
     }
-    setSelectedProduct(product);
+    // Store the current price in the product for escrow
+    const price = getProductPrice(product);
+    const productWithPrice = { ...product, price };
+    setSelectedProduct(productWithPrice as any);
     setEscrowDialogOpen(true);
   };
 
@@ -244,43 +281,73 @@ const Shop = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {products.map((product, index) => (
-            <Card key={index} className="bg-gray-900 border-gray-700 hover:border-cyan-500 transition-colors">
-              <CardHeader>
-                <CardTitle className="text-cyan-400 font-mono text-lg">
-                  {product.title}
-                </CardTitle>
-                <CardDescription className="text-orange-500 font-bold text-lg">
-                  {product.prices}
-                </CardDescription>
-                <p className="text-gray-400 text-sm">{product.subtitle}</p>
-                <p className="text-cyan-300 font-mono text-sm italic">{product.style}</p>
-              </CardHeader>
-              <CardContent>
-                <ImageGallery images={product.images} title={typeof product.title === 'string' ? product.title : 'Product'} />
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  {product.description}
-                </p>
-                <div className="space-y-2">
-                  <Button 
-                    onClick={() => handleAddToCart(product)}
-                    className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
-                  >
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Add to Cart
-                  </Button>
-                  <Button 
-                    onClick={() => handleBuyWithEscrow(product)}
-                    variant="outline"
-                    className="w-full border-gray-700 bg-green-500 text-white hover:bg-green-600 font-mono"
-                  >
-                    <Shield className="mr-2 h-4 w-4" />
-                    Buy with Escrow Protection
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {products.map((product, index) => {
+            const hasLengthOptions = 'lengthOptions' in product;
+            const currentPrice = getProductPrice(product);
+            const selectedLength = hasLengthOptions ? (selectedLengths[product.id] || product.lengthOptions[1].length) : null;
+            
+            return (
+              <Card key={index} className="bg-gray-900 border-gray-700 hover:border-cyan-500 transition-colors">
+                <CardHeader>
+                  <CardTitle className="text-cyan-400 font-mono text-lg">
+                    {product.title}
+                  </CardTitle>
+                  <CardDescription className="text-orange-500 font-bold text-lg">
+                    ${currentPrice.toFixed(2)}
+                  </CardDescription>
+                  {hasLengthOptions ? (
+                    <div className="mt-2">
+                      <Select 
+                        value={selectedLength || undefined}
+                        onValueChange={(value) => setSelectedLengths(prev => ({ ...prev, [product.id]: value }))}
+                      >
+                        <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-white font-mono">
+                          <SelectValue placeholder="Select length" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-600 z-50">
+                          {product.lengthOptions.map((option) => (
+                            <SelectItem 
+                              key={option.length} 
+                              value={option.length}
+                              className="text-white hover:bg-gray-700 focus:bg-gray-700 font-mono"
+                            >
+                              {option.length} - ${option.price}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-sm">{product.subtitle}</p>
+                  )}
+                  <p className="text-cyan-300 font-mono text-sm italic">{product.style}</p>
+                </CardHeader>
+                <CardContent>
+                  <ImageGallery images={product.images} title={typeof product.title === 'string' ? product.title : 'Product'} />
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    {product.description}
+                  </p>
+                  <div className="space-y-2">
+                    <Button 
+                      onClick={() => handleAddToCart(product)}
+                      className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
+                    >
+                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      Add to Cart
+                    </Button>
+                    <Button 
+                      onClick={() => handleBuyWithEscrow(product)}
+                      variant="outline"
+                      className="w-full border-gray-700 bg-green-500 text-white hover:bg-green-600 font-mono"
+                    >
+                      <Shield className="mr-2 h-4 w-4" />
+                      Buy with Escrow Protection
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         <div className="border-t border-gray-700 pt-12">
