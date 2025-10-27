@@ -212,6 +212,33 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Handle cancellation of verification
+    if (action === 'cancel-inquiry') {
+      console.log('Cancelling verification inquiry for user:', user.id);
+
+      // Reset verification status to allow restart
+      const { error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .update({
+          verification_status: 'unverified',
+        })
+        .eq('id', user.id);
+
+      if (profileError) {
+        console.error('Error updating profile:', profileError);
+        throw profileError;
+      }
+
+      await logAuditEvent(supabaseAdmin, user.id, 'verification_inquiry_cancelled', {
+        cancelled_at: new Date().toISOString(),
+      });
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Check verification status
     if (action === 'check-status') {
       console.log('Checking verification status for user:', user.id);

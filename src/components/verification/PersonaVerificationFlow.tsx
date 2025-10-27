@@ -79,8 +79,18 @@ export const PersonaVerificationFlow = ({
           });
           onComplete?.();
         },
-        onCancel: () => {
+        onCancel: async () => {
           console.log('Verification cancelled');
+          
+          // Reset verification status to allow restart
+          try {
+            await supabase.functions.invoke('persona-verification', {
+              body: { action: 'cancel-inquiry' },
+            });
+          } catch (error) {
+            console.error('Error resetting verification status:', error);
+          }
+          
           setLoading(false);
           onCancel?.();
         },
