@@ -60,6 +60,8 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
   } | null>(null);
   const [userReputation, setUserReputation] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [amountError, setAmountError] = useState<string | null>(null);
+  const [sellerError, setSellerError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -112,7 +114,31 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
   };
 
   const handleAmountChange = async (value: string) => {
+    // Validate two decimal places for traditional currencies
+    if (formData.paymentMethod === 'traditional' && value) {
+      const decimalParts = value.split('.');
+      if (decimalParts.length > 1 && decimalParts[1].length > 2) {
+        return; // Don't update if more than 2 decimal places
+      }
+    }
+
     setFormData({ ...formData, amount: value });
+    setAmountError(null);
+
+    // Validate amount limits
+    const numericAmount = Number(value);
+    if (value && numericAmount > 0) {
+      const isVerified = userProfile?.verification_status === 'verified';
+      const maxAmount = isVerified ? 10000 : 500;
+      
+      if (numericAmount > maxAmount) {
+        setAmountError(
+          isVerified 
+            ? `Amount exceeds verified user limit of $${maxAmount.toLocaleString()}` 
+            : `Amount exceeds unverified user limit of $${maxAmount.toLocaleString()}. Please verify your account for higher limits.`
+        );
+      }
+    }
 
     // Auto-convert if crypto payment
     if (formData.paymentMethod === 'crypto' && value && Number(value) > 0) {
@@ -149,6 +175,8 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTierError(null);
+    setAmountError(null);
+    setSellerError(null);
 
     const userId = user?.id || profile?.id;
     if (!userId) {
@@ -164,6 +192,36 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate seller username format
+    const sellerInput = formData.sellerId.trim();
+    if (sellerInput.length < 3) {
+      setSellerError("Username must be at least 3 characters");
+      return;
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(sellerInput) && !sellerInput.startsWith('0x')) {
+      setSellerError("Username can only contain letters, numbers, underscores, and hyphens");
+      return;
+    }
+
+    // Validate amount limits
+    const numericAmount = Number(formData.amount);
+    const isVerified = userProfile?.verification_status === 'verified';
+    const maxAmount = isVerified ? 10000 : 500;
+    
+    if (numericAmount > maxAmount) {
+      setAmountError(
+        isVerified 
+          ? `Amount exceeds verified user limit of $${maxAmount.toLocaleString()}` 
+          : `Amount exceeds unverified user limit of $${maxAmount.toLocaleString()}. Please verify your account for higher limits.`
+      );
+      toast({
+        title: "Amount Limit Exceeded",
+        description: `Maximum transaction amount is $${maxAmount.toLocaleString()} for ${isVerified ? 'verified' : 'unverified'} users`,
         variant: "destructive",
       });
       return;
@@ -304,19 +362,25 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
         )}
       </div>
 
-      {/* Seller ID */}
+      {/* Seller Username */}
       <div className="space-y-2">
         <Label htmlFor="sellerId">
-          Seller Wallet Address / User ID <span className="text-red-500">*</span>
+          Seller Username <span className="text-red-500">*</span>
         </Label>
         <Input
           id="sellerId"
           value={formData.sellerId}
-          onChange={(e) => setFormData({ ...formData, sellerId: e.target.value })}
-          placeholder="0x... or user-id"
-          className="bg-gray-800 border-gray-700"
+          onChange={(e) => {
+            setFormData({ ...formData, sellerId: e.target.value });
+            setSellerError(null);
+          }}
+          placeholder="username or 0x... wallet address"
+          className={`bg-gray-800 border-gray-700 ${sellerError ? 'border-red-500' : ''}`}
           required
         />
+        {sellerError && (
+          <p className="text-sm text-red-500">{sellerError}</p>
+        )}
       </div>
 
       {/* Amount and Currency */}
@@ -333,11 +397,20 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
             value={formData.amount}
             onChange={(e) => handleAmountChange(e.target.value)}
             placeholder="0.00"
-            className="bg-gray-800 border-gray-700"
+            className={`bg-gray-800 border-gray-700 ${amountError ? 'border-red-500' : ''}`}
             required
           />
-          {conversion && formData.paymentMethod === 'crypto' && (
+          {amountError && (
+            <p className="text-sm text-red-500">{amountError}</p>
+          )}
+          {conversion && formData.paymentMethod === 'crypto' && !amountError && (
             <p className="text-xs text-cyan-400">{conversion}</p>
+          )}
+          {!amountError && formData.amount && (
+            <p className="text-xs text-gray-400">
+              Limit: ${userProfile?.verification_status === 'verified' ? '10,000' : '500'} 
+              {userProfile?.verification_status !== 'verified' && ' (verify for higher limits)'}
+            </p>
           )}
         </div>
         <div className="space-y-2">
