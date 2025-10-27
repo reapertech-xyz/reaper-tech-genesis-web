@@ -239,11 +239,48 @@ Deno.serve(async (req) => {
     if (action === 'cancel-inquiry') {
       console.log('Cancelling verification inquiry for user:', user.id);
 
-      // Reset verification status to allow restart
+      // Get user's persona_account_id to redact from Persona
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('persona_account_id')
+        .eq('id', user.id)
+        .single();
+
+      // Redact account from Persona if it exists
+      if (profile?.persona_account_id && PERSONA_API_KEY) {
+        console.log('Redacting Persona account:', profile.persona_account_id);
+        
+        try {
+          const redactResponse = await fetch(
+            `https://withpersona.com/api/v1/accounts/${profile.persona_account_id}`,
+            {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${PERSONA_API_KEY}`,
+                'Persona-Version': '2023-01-05',
+              },
+            }
+          );
+
+          if (!redactResponse.ok) {
+            const errorText = await redactResponse.text();
+            console.error('Failed to redact Persona account:', errorText);
+            // Continue with local cleanup even if Persona redaction fails
+          } else {
+            console.log('Successfully redacted Persona account:', profile.persona_account_id);
+          }
+        } catch (redactError) {
+          console.error('Error redacting Persona account:', redactError);
+          // Continue with local cleanup even if Persona redaction fails
+        }
+      }
+
+      // Reset verification status and clear persona_account_id to allow restart
       const { error: profileError } = await supabaseAdmin
         .from('profiles')
         .update({
           verification_status: 'unverified',
+          persona_account_id: null,
         })
         .eq('id', user.id);
 
@@ -254,6 +291,8 @@ Deno.serve(async (req) => {
 
       await logAuditEvent(supabaseAdmin, user.id, 'verification_inquiry_cancelled', {
         cancelled_at: new Date().toISOString(),
+        persona_account_id: profile?.persona_account_id || null,
+        redacted_from_persona: !!profile?.persona_account_id,
       });
 
       return new Response(
