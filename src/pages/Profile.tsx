@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, Wallet, Globe, Shield, CheckCircle, XCircle, Clock, Trash2, Home } from 'lucide-react';
+import { Loader2, Mail, Wallet, Globe, Shield, CheckCircle, XCircle, Clock, Trash2, Home, CreditCard } from 'lucide-react';
 import { loginWithUnstoppableDomains } from '@/lib/unstoppable-domains';
 import { ConnectWallet, useAddress, useConnectionStatus } from '@thirdweb-dev/react';
 import Header from '@/components/Header';
@@ -375,6 +375,33 @@ export default function Profile() {
                 </Button>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Billing Management */}
+        <Card className="mb-6 bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-cyan-400 font-mono">
+              <CreditCard className="h-5 w-5" />
+              Billing & Payments
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Manage your billing and payment methods
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              asChild
+              className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
+            >
+              <a 
+                href={`https://billing.stripe.com/p/login/7sYeVcaan8jg0LJ2Xu43S00${user?.email ? `?prefilled_email=${encodeURIComponent(user.email)}` : ''}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Manage Billing
+              </a>
+            </Button>
           </CardContent>
         </Card>
 
