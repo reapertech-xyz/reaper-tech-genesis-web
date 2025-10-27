@@ -10,12 +10,14 @@ interface VerificationPromptProps {
   verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
   currentTier: string;
   onStartVerification?: () => void;
+  onCloseParentDialog?: () => void;
 }
 
 export const VerificationPrompt = ({ 
   verificationStatus, 
   currentTier,
-  onStartVerification 
+  onStartVerification,
+  onCloseParentDialog
 }: VerificationPromptProps) => {
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
 
@@ -25,6 +27,7 @@ export const VerificationPrompt = ({
 
   const handlePersonaOpen = () => {
     setShowVerificationDialog(false);
+    onCloseParentDialog?.(); // Close the parent escrow dialog when Persona opens
   };
 
   const handleVerificationComplete = () => {

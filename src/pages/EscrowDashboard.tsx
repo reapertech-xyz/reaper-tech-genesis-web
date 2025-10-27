@@ -195,7 +195,10 @@ const EscrowDashboard = () => {
                   Set up a secure escrow transaction with buyer protection
                 </DialogDescription>
               </DialogHeader>
-              <CreateEscrowForm onSuccess={() => setIsCreateDialogOpen(false)} />
+              <CreateEscrowForm 
+                onSuccess={() => setIsCreateDialogOpen(false)} 
+                onCloseDialog={() => setIsCreateDialogOpen(false)}
+              />
             </DialogContent>
           </Dialog>
         </div>

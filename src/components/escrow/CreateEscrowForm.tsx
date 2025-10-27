@@ -31,9 +31,10 @@ interface CreateEscrowFormProps {
     amount?: number;
     description?: string;
   };
+  onCloseDialog?: () => void;
 }
 
-const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFormProps) => {
+const CreateEscrowForm = ({ onSuccess, listingId, prefillData, onCloseDialog }: CreateEscrowFormProps) => {
   const { user, profile } = useUnifiedAuth();
   const { createTransaction, loading } = useEscrow();
   const { checkBalance, getConversion, loading: cryptoLoading } = useCryptoEscrow();
@@ -293,6 +294,7 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
         <VerificationPrompt
           verificationStatus={userProfile.verification_status || 'unverified'}
           currentTier={userReputation?.tier || 'Shadow Trader'}
+          onCloseParentDialog={onCloseDialog}
         />
       )}
 
