@@ -135,9 +135,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Create new Persona inquiry
+    // Create or resume Persona inquiry
     if (action === 'create-inquiry') {
-      console.log('Creating Persona inquiry for user:', user.id);
+      console.log('Starting verification inquiry for user:', user.id);
 
       if (!PERSONA_API_KEY) {
         console.error('PERSONA_API_KEY is not set');
@@ -149,12 +149,66 @@ Deno.serve(async (req) => {
         throw new Error('Persona template ID not configured');
       }
 
-      // Get user's email if available
+      // Check if user has an existing inquiry
       const { data: profile } = await supabaseAdmin
         .from('profiles')
-        .select('encrypted_email')
+        .select('verification_inquiry_id, verification_status')
         .eq('id', user.id)
         .single();
+
+      const existingInquiryId = profile?.verification_inquiry_id;
+      const currentStatus = profile?.verification_status;
+
+      // Resume existing inquiry if it exists and is in a resumable state
+      if (existingInquiryId && ['unverified', 'canceled'].includes(currentStatus)) {
+        console.log('Resuming existing inquiry:', existingInquiryId);
+
+        const resumeResponse = await fetch(
+          `https://withpersona.com/api/v1/inquiries/${existingInquiryId}/resume`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${PERSONA_API_KEY}`,
+              'Content-Type': 'application/json',
+              'Persona-Version': '2023-01-05',
+            },
+          }
+        );
+
+        if (resumeResponse.ok) {
+          const resumeData = await resumeResponse.json();
+          console.log('Successfully resumed inquiry');
+
+          const sessionToken = resumeData.data.attributes['session-token'];
+
+          // Update status to pending
+          await supabaseAdmin
+            .from('profiles')
+            .update({
+              verification_status: 'pending',
+              verification_initiated_at: new Date().toISOString(),
+            })
+            .eq('id', user.id);
+
+          await logAuditEvent(supabaseAdmin, user.id, 'verification_inquiry_resumed', {
+            inquiry_id: existingInquiryId,
+          });
+
+          return new Response(
+            JSON.stringify({
+              success: true,
+              inquiry_id: existingInquiryId,
+              session_token: sessionToken,
+            }),
+            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        } else {
+          console.log('Could not resume inquiry, will create new one');
+        }
+      }
+
+      // Create new inquiry
+      console.log('Creating new Persona inquiry for user:', user.id);
 
       const inquiryData: PersonaInquiryData = {
         type: 'inquiry',
@@ -239,48 +293,11 @@ Deno.serve(async (req) => {
     if (action === 'cancel-inquiry') {
       console.log('Cancelling verification inquiry for user:', user.id);
 
-      // Get user's persona_account_id to redact from Persona
-      const { data: profile } = await supabaseAdmin
-        .from('profiles')
-        .select('persona_account_id')
-        .eq('id', user.id)
-        .single();
-
-      // Redact account from Persona if it exists
-      if (profile?.persona_account_id && PERSONA_API_KEY) {
-        console.log('Redacting Persona account:', profile.persona_account_id);
-        
-        try {
-          const redactResponse = await fetch(
-            `https://withpersona.com/api/v1/accounts/${profile.persona_account_id}`,
-            {
-              method: 'DELETE',
-              headers: {
-                'Authorization': `Bearer ${PERSONA_API_KEY}`,
-                'Persona-Version': '2023-01-05',
-              },
-            }
-          );
-
-          if (!redactResponse.ok) {
-            const errorText = await redactResponse.text();
-            console.error('Failed to redact Persona account:', errorText);
-            // Continue with local cleanup even if Persona redaction fails
-          } else {
-            console.log('Successfully redacted Persona account:', profile.persona_account_id);
-          }
-        } catch (redactError) {
-          console.error('Error redacting Persona account:', redactError);
-          // Continue with local cleanup even if Persona redaction fails
-        }
-      }
-
-      // Reset verification status and clear persona_account_id to allow restart
+      // Update verification status to canceled (keep inquiry_id for resumption)
       const { error: profileError } = await supabaseAdmin
         .from('profiles')
         .update({
-          verification_status: 'unverified',
-          persona_account_id: null,
+          verification_status: 'canceled',
         })
         .eq('id', user.id);
 
@@ -291,8 +308,6 @@ Deno.serve(async (req) => {
 
       await logAuditEvent(supabaseAdmin, user.id, 'verification_inquiry_cancelled', {
         cancelled_at: new Date().toISOString(),
-        persona_account_id: profile?.persona_account_id || null,
-        redacted_from_persona: !!profile?.persona_account_id,
       });
 
       return new Response(
