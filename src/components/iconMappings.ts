@@ -2,22 +2,22 @@
 export const iconMappings: Record<string, string> = {
   // Existing icons from lovable-uploads
   reaperHood: "/lovable-uploads/reaper-tech-3d-logo.png",
-  bolt: "/lovable-uploads/74a314ec-2755-4636-a063-5d1e955d796e.png",
-  wallAdapter: "/lovable-uploads/4687d604-305c-408c-9bfc-1901697c58c3.png",
+  bolt: "/lovable-uploads/1d232681-b4f3-4e00-8fa3-93aeb478dee6.png",
+  wallAdapter: "/lovable-uploads/7e97b17f-51ec-4e6e-a38a-155d4e9f8d7e.png",
   datacenter: "/lovable-uploads/15c896f9-a037-42e5-92f1-0ef090c3b823.png",
-  blockchain: "/lovable-uploads/7e97b17f-51ec-4e6e-a38a-155d4e9f8d7e.png",
-  phoneGradient: "/lovable-uploads/126b1c87-1012-499e-844e-2728aa50c1a4.png",
-  foldablePhone: "/lovable-uploads/f6f26f26-8f46-4e86-8d8b-6526bafc9c7f.png",
-  wifi: "/lovable-uploads/8c78d661-e33d-4284-93c9-3e1df8015e54.png",
+  blockchain: "/lovable-uploads//4687d604-305c-408c-9bfc-1901697c58c3.png",
+  phoneGradient: "/lovable-uploads/82638358-fa89-4121-9e3d-b6a0778be47d.png",
+  foldablePhone: "/lovable-uploads/3470e7ce-e63c-44cd-8fc3-ff741c77075a.png",
+  wifi: "/lovable-uploads//8c78d661-e33d-4284-93c9-3e1df8015e54.png",
   delivery: "/lovable-uploads/82638358-fa89-4121-9e3d-b6a0778be47d.png",
   laptop: "/lovable-uploads/3470e7ce-e63c-44cd-8fc3-ff741c77075a.png",
-  serverRack: "/lovable-uploads/59e25f0a-2853-4447-bce5-3f4c193b0af1.png",
+  serverRack: "/lovable-uploads//f6f26f26-8f46-4e86-8d8b-6526bafc9c7f.png",
   hardDrive: "/lovable-uploads/d58b2aad-a3c0-4c35-bf62-b7b7b9632189.png",
   gameController: "/lovable-uploads/bd222062-3e34-4686-9281-e8f428f4c6df.png",
   circuit: "/lovable-uploads/737fa37e-72d2-4527-a59a-a57c7928eb10.png",
   robotHead: "/lovable-uploads/f9eca089-3b42-4b20-9bc1-903799fff348.png",
   database: "/lovable-uploads/6d3954e7-3b6f-464c-8fcf-c4450ff557d1.png",
-  usb: "/lovable-uploads/48dde519-2a04-4985-9566-601400e3281a.png",
+  usb: "/lovable-uploads/74a314ec-2755-4636-a063-5d1e955d796e.png",
   smartphone: "/lovable-uploads/c2e7c1bd-822f-4754-b337-61ecdeb81288.png",
   tablet: "/lovable-uploads/586974d3-9173-427d-9ae7-17e13e0378fe.png",
   networkCard: "/lovable-uploads/31e6b38f-96a0-4276-b51c-1bf8efe11f45.png",
@@ -25,14 +25,14 @@ export const iconMappings: Record<string, string> = {
   // REAPER THEME ICONS
   reaperScythe: "/ThiingsIcons/menacing-grim-reaper.png",
   blackCat: "/ThiingsIcons/black-cat-yellow-eyes.png",
-  blackHood: "/ThiingsIcons/black-hooded-cloak.png",
+  blackHood: "/ThiingsIcons//126b1c87-1012-499e-844e-2728aa50c1a4.png",
   skull: "/ThiingsIcons/skull-model.png",
   ghostCandle: "/ThiingsIcons/ghost-candle-flame.png",
   skeletonToy: "/ThiingsIcons/skeleton-toy-figure.png",
   goldenSkull: "/ThiingsIcons/golden-skull-coin.png",
   blackWidowSpider: "/ThiingsIcons/blackwidow-spider-redmark.png",
-  
-  // TECH & COMPUTING ICONS  
+
+  // TECH & COMPUTING ICONS
   cpu: "/ThiingsIcons/CPU-isometric-microchip-icon.png",
   ram: "/ThiingsIcons/RAM-green-pcb-edge-connector.png",
   circuitBoard: "/ThiingsIcons/green-circuit-board-pcb.png",
@@ -43,7 +43,7 @@ export const iconMappings: Record<string, string> = {
   portableSSD: "/ThiingsIcons/gray-portable-ssd-with-loop.png",
   motherboard: "/ThiingsIcons/hdmi-usb-pcb-board.png",
   microchip: "/ThiingsIcons/isometric-chip-with-gold-pins.png",
-  
+
   // COMPUTERS & DEVICES
   vintageComputer: "/ThiingsIcons/vintage-computer-green-screen.png",
   retroKeyboard: "/ThiingsIcons/vintage-computer-keyboard.png",
@@ -54,11 +54,11 @@ export const iconMappings: Record<string, string> = {
   graphicDesign: "/ThiingsIcons/graphic-design-workstation.png",
   graphicTablet: "/ThiingsIcons/graphic-tablet-color-palette.png",
   videoEditing: "/ThiingsIcons/video-editing-on-laptop-with headphones-ruler-nd-colorwheel.png",
-  
+
   // MOBILE & TABLETS
   smartphoneGradient: "/ThiingsIcons/smartphone-gradient-display.png",
   tabletGradient: "/ThiingsIcons/tablet-gradient-screen.png",
-  
+
   // GAMING
   ps5Console: "/ThiingsIcons/ps5-console-controller.png",
   ps5Controller: "/ThiingsIcons/ps5-controller-white.png",
@@ -68,18 +68,18 @@ export const iconMappings: Record<string, string> = {
   retroConsole: "/ThiingsIcons/retro-console-gamepad-pencil.png",
   arcadeCabinet: "/ThiingsIcons/arcade-cabinet-pixel-game.png",
   retroArcade: "/ThiingsIcons/retro-arcade-cabinet-joystick.png",
-  
+
   // NETWORKING & CONNECTIVITY
   wifiRouter: "/ThiingsIcons/dual-antenna-wifi-router.png",
   noWifi: "/ThiingsIcons/no-wifi-icon.png",
   phoneTransfer: "/ThiingsIcons/phone-transfer-between-devices.png",
-  
+
   // STORAGE & CABLES
   usbFlash: "/ThiingsIcons/usb-flash-drive-cap.png",
   usbCable: "/ThiingsIcons/dual-end-usba-usbc-cable.png",
   usbLightning: "/ThiingsIcons/usb-lightning-cable.png",
   hdmiSwitcher: "/ThiingsIcons/hdmi-switcher-3x1.png",
-  
+
   // POWER & CHARGING
   powerBank: "/ThiingsIcons/power-bank-100percent-charge.png",
   usbWallCharger: "/ThiingsIcons/usb-wall-charger-cable.png",
@@ -88,7 +88,7 @@ export const iconMappings: Record<string, string> = {
   socketCube: "/ThiingsIcons/universal-socket-usb-cube.png",
   smartPlug: "/ThiingsIcons/smart-wall-plug-outlet.png",
   wallSwitch: "/ThiingsIcons/cream-wall-switch.png",
-  
+
   // WEARABLES & ACCESSORIES
   smartwatch: "/ThiingsIcons/smartwatch-heart-rate.png",
   orangeWatch: "/ThiingsIcons/orange-band-smartwatch.png",
@@ -97,7 +97,7 @@ export const iconMappings: Record<string, string> = {
   airpods: "/ThiingsIcons/airpods-headphones-wireless-in case.png",
   wirelessEarbuds: "/ThiingsIcons/wireless-earbuds-in-case.png",
   blackSunglasses: "/ThiingsIcons/black-frame-sunglasses.png",
-  
+
   // AUDIO & ENTERTAINMENT
   grandPiano: "/ThiingsIcons/grand-piano-open-lid.png",
   grandPiano2: "/ThiingsIcons/grand-piano-open-lid-1.png",
@@ -111,13 +111,13 @@ export const iconMappings: Record<string, string> = {
   woodenSpeaker: "/ThiingsIcons/wooden-speaker-dock.png",
   discoBall: "/ThiingsIcons/sparkling-disco-ball.png",
   stageLighting: "/ThiingsIcons/stage-lighting-audio.png",
-  
+
   // PHOTOGRAPHY & VIDEO
   nikonCamera: "/ThiingsIcons/nikon-camera-closeup.png",
   cameraLens: "/ThiingsIcons/camera-lens-3d.png",
   webcam: "/ThiingsIcons/spherical-camera-webcam-stand.png",
   securityCamera: "/ThiingsIcons/security-camera-white-model.png",
-  
+
   // SMART HOME
   smartTV: "/ThiingsIcons/smart-tv-with-icons.png",
   smartDisplay: "/ThiingsIcons/smart-display-weather-mountain.png",
@@ -129,7 +129,7 @@ export const iconMappings: Record<string, string> = {
   remoteControl: "/ThiingsIcons/remote-control-dpad-ok.png",
   robotVacuum: "/ThiingsIcons/robot-vacuum-top.png",
   roboticVacuum: "/ThiingsIcons/robotic-vacuum-power-on.png",
-  
+
   // TOOLS & HARDWARE
   cordlessDrill: "/ThiingsIcons/cordless-drill-orange.png",
   orangeScrewdriver: "/ThiingsIcons/orange-handle-screwdriver.png",
@@ -137,14 +137,14 @@ export const iconMappings: Record<string, string> = {
   bulldozer: "/ThiingsIcons/yellow-bulldozer.png",
   excavator: "/ThiingsIcons/yellow-excavator-toy.png",
   pressureWasher: "/ThiingsIcons/pressure-washer-yellow.png",
-  
+
   // APPLIANCES
   vintageFridge: "/ThiingsIcons/vintage-fridge-digital-panel.png",
   microwave: "/ThiingsIcons/microwave-oven-digital-timer.png",
   fourBurnerStove: "/ThiingsIcons/white-four-burner-stove.png",
   dishwasher: "/ThiingsIcons/dishwasher-dishes-utensils.png",
   openDishwasher: "/ThiingsIcons/open-dishwasher-dishes-cutlery.png",
-  
+
   // HOME & FURNITURE
   cozyCottage: "/ThiingsIcons/cozy-cottage-with-garden.png",
   thatchedCottage: "/ThiingsIcons/thatched-cottage-model.png",
@@ -166,7 +166,7 @@ export const iconMappings: Record<string, string> = {
   coffeeTable: "/ThiingsIcons/wooden-coffee-table-shelf.png",
   wardrobe: "/ThiingsIcons/wooden-wardrobe-with-clothes.png",
   metalShelf: "/ThiingsIcons/metal-shelf-i-beam.png",
-  
+
   // BATHROOM & CLEANING
   toilet: "/ThiingsIcons/toilet-ceramic-standalone.png",
   toiletBrush: "/ThiingsIcons/toilet-brush-holder.png",
@@ -204,7 +204,7 @@ export const iconMappings: Record<string, string> = {
   welcomeMat: "/ThiingsIcons/welcome-doormat.png",
   brownMat: "/ThiingsIcons/brown-welcome-doormat.png",
   rubberDuck: "/ThiingsIcons/yellow-rubber-duck-on-black.png",
-  
+
   // SHOPPING & RETAIL
   shoppingBag: "/ThiingsIcons/orange-shopping-bag.png",
   shoppingCart: "/ThiingsIcons/shopping-cart-metal-gray.png",
@@ -218,7 +218,7 @@ export const iconMappings: Record<string, string> = {
   retailPerson: "/ThiingsIcons/Retail-Service-Person_Icon.png",
   handTruck: "/ThiingsIcons/handtruck-boxes.png",
   truckDelivery: "/ThiingsIcons/truck-delivers-package.png",
-  
+
   // FINANCE & PAYMENT
   cashStack: "/ThiingsIcons/cash-stack.png",
   greenMoney: "/ThiingsIcons/green-money-stack.png",
@@ -231,7 +231,7 @@ export const iconMappings: Record<string, string> = {
   bitcoin: "/ThiingsIcons/bitcoin-gold-coin.png",
   goldenBitcoin: "/ThiingsIcons/golden-bitcoin-on-black.png",
   bitcoinGold: "/ThiingsIcons/gold-bitcoin-coin.png",
-  
+
   // FANTASY & MYSTICAL
   glowingStar: "/ThiingsIcons/glowing-star-shape.png",
   starCloud: "/ThiingsIcons/glowing-star-cloud.png",
@@ -246,7 +246,7 @@ export const iconMappings: Record<string, string> = {
   dungeonArch: "/ThiingsIcons/image-dungeon-arch-skulls.png",
   goldenBell: "/ThiingsIcons/golden-bell-3d-render.png",
   clockStopwatch: "/ThiingsIcons/analog-stopwatch-closeup.png",
-  
+
   // SCIENCE & TECH
   dnaHelix: "/ThiingsIcons/colorful-dna-helix.png",
   dnaSequencer: "/ThiingsIcons/dna-helix-sequencer.png",
@@ -261,7 +261,7 @@ export const iconMappings: Record<string, string> = {
   holodeck: "/ThiingsIcons/halodeck-with-isometric-tree-diorama-lab.png",
   printer3D: "/ThiingsIcons/3d-printer-print-blue-pyramid.png",
   rcCar: "/ThiingsIcons/rc-car-kit-assembly.png",
-  
+
   // SPACE & NATURE
   cosmicNebula: "/ThiingsIcons/cosmic-nebula-stars.png",
   blackhole: "/ThiingsIcons/swirling-blackhole-disk.png",
@@ -277,7 +277,7 @@ export const iconMappings: Record<string, string> = {
   rubiksCube: "/ThiingsIcons/colorful-rubiks-cube.png",
   redApple: "/ThiingsIcons/red-apple-on-black.png",
   yellowApple: "/ThiingsIcons/red-yellow-apple-.png",
-  
+
   // UI & INTERFACE
   settingsIcon: "/ThiingsIcons/Settings-Icon.png",
   gearShapes: "/ThiingsIcons/gear-rotate-shapes.png",
@@ -302,12 +302,12 @@ export const iconMappings: Record<string, string> = {
   qrCode: "/ThiingsIcons/qr-code-display.png",
   workOrder: "/ThiingsIcons/work-order-with-check-list.png",
   terminal: "/ThiingsIcons/icon_terminal-command-line.png",
-  
+
   // DOCUMENTS & SECURITY
   documentSearch: "/ThiingsIcons/document-text-search.png",
   paperFolder: "/ThiingsIcons/paper-with-folder-3d-icon.png",
   invoiceAmount: "/ThiingsIcons/invoice-amount-paid.png",
-  
+
   // PLACEHOLDER MAPPINGS (using existing icons until custom icons are added)
   market3D: "/ThiingsIcons/Fantasy-Alchemy-Shop-Counter-And-Shelves-With-Potions-Books-Crystals.png",
   purpleCatMystic: "/ThiingsIcons/black-cat-yellow-eyes.png",
@@ -319,23 +319,23 @@ export const iconMappings: Record<string, string> = {
   policyDocument: "/ThiingsIcons/policy-document-lock.png",
   securePolicy: "/ThiingsIcons/secure-policy.png",
   cybersecurityLock: "/ThiingsIcons/cybersecurity-lock-monitor.png",
-  
+
   // INFORMATION & ALERTS
   infoBlue: "/ThiingsIcons/info-icon-blue-circle.png",
   newspaper: "/ThiingsIcons/news-newspaper.png",
   webpageUI: "/ThiingsIcons/webpage-ui-mockup-illustration.png",
   displayLandscape: "/ThiingsIcons/display-landscape-scene.png",
-  
+
   // SPECIAL LAB ENVIRONMENT
   haloDeck: "/ThiingsIcons/halodeck-with-isometric-tree-diorama-lab.png",
-  
+
   // Maintain compatibility with existing 3D icons
   skull3D: "/ThiingsIcons/skull-model.png",
-  gem3D: "/ThiingsIcons/glowing-crystal-dish.png", 
+  gem3D: "/ThiingsIcons/glowing-crystal-dish.png",
   gear3D: "/ThiingsIcons/gear-rotate-shapes.png",
   star3D: "/ThiingsIcons/glowing-star-shape.png",
   box3D: "/ThiingsIcons/shopping-basket_icon.png",
   crown3D: "/ThiingsIcons/golden-skull-coin.png",
   wallet3D: "/ThiingsIcons/credit-card-blue-mastercard.png",
-  shield3D: "/ThiingsIcons/cybersecurity-lock-monitor.png"
+  shield3D: "/ThiingsIcons/cybersecurity-lock-monitor.png",
 };
