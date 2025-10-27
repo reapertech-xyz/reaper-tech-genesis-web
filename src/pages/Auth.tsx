@@ -42,6 +42,7 @@ const Auth = () => {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [isDomainLogin, setIsDomainLogin] = useState(false);
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -127,6 +128,43 @@ const Auth = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address to resend verification",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsResendingEmail(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Verification Email Sent",
+        description: "Check your inbox for the verification link"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsResendingEmail(false);
     }
   };
 
@@ -243,6 +281,25 @@ const Auth = () => {
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </Button>
             </form>
+
+            {isLogin && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleResendVerification}
+                disabled={isResendingEmail}
+                className="w-full mt-2 text-gray-400 hover:text-cyan-400"
+              >
+                {isResendingEmail ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Resend Verification Email'
+                )}
+              </Button>
+            )}
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">

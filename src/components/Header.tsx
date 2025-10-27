@@ -148,10 +148,13 @@ const Header = ({ title }: HeaderProps) => {
           
           {(user || profile) ? (
             <div className="flex items-center space-x-3">
-              <span className="text-gray-400 text-sm flex items-center">
+              <Link 
+                to="/profile" 
+                className="text-gray-400 hover:text-cyan-400 text-sm flex items-center transition-colors"
+              >
                 <ThiingsIcon name="crown3D" size={16} className="mr-1" />
                 {profile?.username || user?.email?.split('@')[0] || 'User'}
-              </span>
+              </Link>
               <Button
                 onClick={handleSignOut}
                 variant="ghost"
@@ -237,15 +240,18 @@ const Header = ({ title }: HeaderProps) => {
           
           {(user || profile) ? (
             <div className="pt-2 border-t border-gray-700">
-              <p className="text-gray-400 text-sm mb-2 flex items-center">
+              <Link 
+                to="/profile"
+                className="text-gray-400 hover:text-cyan-400 text-sm mb-2 flex items-center transition-colors"
+              >
                 <ThiingsIcon name="crown3D" size={16} className="mr-2" />
                 {profile?.username || user?.email?.split('@')[0] || 'User'}
-              </p>
+              </Link>
               <Button
                 onClick={handleSignOut}
                 variant="ghost"
                 size="sm"
-                className="text-gray-400 hover:text-red-400"
+                className="text-gray-400 hover:text-red-400 mt-2"
               >
                 Sign Out
               </Button>

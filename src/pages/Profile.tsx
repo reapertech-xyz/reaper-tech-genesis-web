@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -7,9 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, Wallet, Globe, Shield, CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
+import { Loader2, Mail, Wallet, Globe, Shield, CheckCircle, XCircle, Clock, Trash2, Home } from 'lucide-react';
 import { loginWithUnstoppableDomains } from '@/lib/unstoppable-domains';
 import { ConnectWallet, useAddress, useConnectionStatus } from '@thirdweb-dev/react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function Profile() {
   const { user, profile, loading, linkWalletToProfile } = useUnifiedAuth();
@@ -206,176 +208,202 @@ export default function Profile() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto py-8 px-4">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Profile Settings</h1>
-        <p className="text-muted-foreground">Manage your account connections and verification status</p>
-      </div>
-
-      {/* Verification Status */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Verification Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-3">
-            {getVerificationIcon()}
-            <div>
-              <p className="font-medium capitalize">
-                {profile?.verification_status || 'unverified'}
-              </p>
-              {profile?.verified_at && (
-                <p className="text-sm text-muted-foreground">
-                  Verified on {new Date(profile.verified_at).toLocaleDateString()}
-                </p>
-              )}
-            </div>
+    <div className="min-h-screen bg-black text-white">
+      <Header title="Profile" />
+      
+      <main className="container max-w-4xl mx-auto py-8 px-4">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold font-mono text-cyan-400">Profile Settings</h1>
+            <p className="text-gray-400 mt-2">Manage your account connections and verification status</p>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Email Management */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
-            Email Address
-          </CardTitle>
-          <CardDescription>
-            Link or update your email address
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Current Email</Label>
-            <Input
-              id="current-email"
-              type="email"
-              value={user?.email || 'No email linked'}
-              disabled
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">New Email</Label>
-            <div className="flex gap-2">
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter new email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Button 
-                onClick={handleLinkEmail}
-                disabled={isUpdatingEmail || !email}
-              >
-                {isUpdatingEmail ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  'Update'
-                )}
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Unstoppable Domains */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Globe className="h-5 w-5" />
-            Unstoppable Domains
-          </CardTitle>
-          <CardDescription>
-            Link your Web3 domains for easy login
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button 
-            onClick={handleLinkDomain}
-            disabled={isLinkingDomain}
-            className="w-full"
+          <Button
+            asChild
+            variant="outline"
+            className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/10"
           >
-            {isLinkingDomain ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Linking...
-              </>
-            ) : (
-              'Link Unstoppable Domain'
-            )}
+            <Link to="/">
+              <Home className="h-4 w-4 mr-2" />
+              Home
+            </Link>
           </Button>
-          
-          {linkedDomains.length > 0 && (
-            <div className="space-y-2">
-              <Label>Linked Domains</Label>
-              {linkedDomains.map((domain) => (
-                <div key={domain} className="flex items-center justify-between p-3 border rounded-lg">
-                  <span className="font-mono text-sm">{domain}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemoveDomain(domain)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Crypto Wallets */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Wallet className="h-5 w-5" />
-            Crypto Wallets
-          </CardTitle>
-          <CardDescription>
-            Connect your crypto wallets
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {walletConnectionStatus === 'connected' && walletAddress ? (
-            <div className="flex gap-2">
+        {/* Verification Status */}
+        <Card className="mb-6 bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-cyan-400 font-mono">
+              <Shield className="h-5 w-5" />
+              Verification Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-3">
+              {getVerificationIcon()}
+              <div>
+                <p className="font-medium capitalize text-white">
+                  {profile?.verification_status || 'unverified'}
+                </p>
+                {profile?.verified_at && (
+                  <p className="text-sm text-gray-400">
+                    Verified on {new Date(profile.verified_at).toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Email Management */}
+        <Card className="mb-6 bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-cyan-400 font-mono">
+              <Mail className="h-5 w-5" />
+              Email Address
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Link or update your email address
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-300">Current Email</Label>
               <Input
-                value={walletAddress}
+                id="current-email"
+                type="email"
+                value={user?.email || 'No email linked'}
                 disabled
-                className="font-mono text-sm"
+                className="bg-gray-800 border-gray-600 text-gray-400"
               />
-              <Button onClick={handleLinkWallet}>
-                Link Wallet
-              </Button>
             </div>
-          ) : (
-            <ConnectWallet />
-          )}
-
-          {linkedWallets.length > 0 && (
             <div className="space-y-2">
-              <Label>Linked Wallets</Label>
-              {linkedWallets.map((wallet) => (
-                <div key={wallet} className="flex items-center justify-between p-3 border rounded-lg">
-                  <span className="font-mono text-sm truncate flex-1">{wallet}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemoveWallet(wallet)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+              <Label htmlFor="email" className="text-gray-300">New Email</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter new email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-gray-800 border-gray-600 text-white"
+                />
+                <Button 
+                  onClick={handleLinkEmail}
+                  disabled={isUpdatingEmail || !email}
+                  className="bg-cyan-500 hover:bg-cyan-600 text-black"
+                >
+                  {isUpdatingEmail ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    'Update'
+                  )}
+                </Button>
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        {/* Unstoppable Domains */}
+        <Card className="mb-6 bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-cyan-400 font-mono">
+              <Globe className="h-5 w-5" />
+              Unstoppable Domains
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Link your Web3 domains for easy login
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button 
+              onClick={handleLinkDomain}
+              disabled={isLinkingDomain}
+              className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
+            >
+              {isLinkingDomain ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Linking...
+                </>
+              ) : (
+                'Link Unstoppable Domain'
+              )}
+            </Button>
+            
+            {linkedDomains.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-gray-300">Linked Domains</Label>
+                {linkedDomains.map((domain) => (
+                  <div key={domain} className="flex items-center justify-between p-3 bg-gray-800 border border-gray-700 rounded-lg">
+                    <span className="font-mono text-sm text-white">{domain}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveDomain(domain)}
+                      className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Crypto Wallets */}
+        <Card className="bg-gray-900 border-gray-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-cyan-400 font-mono">
+              <Wallet className="h-5 w-5" />
+              Crypto Wallets
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Connect your crypto wallets
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {walletConnectionStatus === 'connected' && walletAddress ? (
+              <div className="flex gap-2">
+                <Input
+                  value={walletAddress}
+                  disabled
+                  className="font-mono text-sm bg-gray-800 border-gray-600 text-gray-400"
+                />
+                <Button 
+                  onClick={handleLinkWallet}
+                  className="bg-cyan-500 hover:bg-cyan-600 text-black"
+                >
+                  Link Wallet
+                </Button>
+              </div>
+            ) : (
+              <ConnectWallet />
+            )}
+
+            {linkedWallets.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-gray-300">Linked Wallets</Label>
+                {linkedWallets.map((wallet) => (
+                  <div key={wallet} className="flex items-center justify-between p-3 bg-gray-800 border border-gray-700 rounded-lg">
+                    <span className="font-mono text-sm truncate flex-1 text-white">{wallet}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveWallet(wallet)}
+                      className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </main>
+      
+      <Footer />
     </div>
   );
 }
