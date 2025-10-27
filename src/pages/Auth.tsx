@@ -11,6 +11,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ThiingsIcon from '@/components/ThiingsIcon';
 import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
+import { loginWithUnstoppableDomains } from '@/lib/unstoppable-domains';
+import { supabase } from '@/integrations/supabase/client';
 
 // Validation schemas
 const emailSchema = z.string()
@@ -38,6 +41,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isDomainLogin, setIsDomainLogin] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -126,6 +130,54 @@ const Auth = () => {
     }
   };
 
+  const handleDomainLogin = async () => {
+    setIsDomainLogin(true);
+    try {
+      const { domain, wallet } = await loginWithUnstoppableDomains();
+      
+      // Check if profile exists with this domain
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .contains('linked_domains', [domain])
+        .maybeSingle();
+
+      if (existingProfile) {
+        // User exists, need to authenticate
+        toast({
+          title: 'Domain recognized',
+          description: 'Please sign in with your email to link this domain',
+        });
+      } else {
+        // New domain, create wallet profile
+        const { data } = await supabase.rpc('get_or_create_wallet_profile', {
+          _wallet_address: wallet
+        });
+
+        if (data) {
+          await supabase.rpc('add_domain_to_profile', {
+            _user_id: data,
+            _domain: domain
+          });
+
+          toast({
+            title: 'Welcome!',
+            description: 'Profile created with your domain',
+          });
+          navigate('/');
+        }
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to login with domain',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDomainLogin(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <Header title="Authentication" />
@@ -191,6 +243,34 @@ const Auth = () => {
                 {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
               </Button>
             </form>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-700" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-gray-900 px-2 text-gray-400">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full bg-gray-800 border-gray-600 hover:bg-gray-700 text-white"
+              onClick={handleDomainLogin}
+              disabled={isDomainLogin}
+            >
+              {isDomainLogin ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connecting...
+                </>
+              ) : (
+                'Unstoppable Domains'
+              )}
+            </Button>
             
             <div className="mt-4 text-center">
               <Button

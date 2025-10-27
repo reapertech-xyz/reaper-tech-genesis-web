@@ -19,6 +19,7 @@ import SeedVault from "./pages/SeedVault";
 import EscrowDashboard from "./pages/EscrowDashboard";
 import DisputeDashboard from "./pages/admin/DisputeDashboard";
 import AuditLogDashboard from "./pages/admin/AuditLogDashboard";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/cart" element={<Cart />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/bookmarks" element={<Bookmarks />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/seedvault" element={<SeedVault />} />
             <Route path="/escrow" element={<EscrowDashboard />} />
             <Route path="/admin/disputes" element={<DisputeDashboard />} />
