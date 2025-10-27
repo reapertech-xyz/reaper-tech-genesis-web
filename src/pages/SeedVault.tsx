@@ -94,7 +94,7 @@ const LedgerFields = () => {
             </h1>
           </div>
           <p className="text-xl md:text-2xl text-gray-300 mb-4 max-w-4xl mx-auto">
-            The safety first, escrow second cryptocurrency utilizing marketplace.
+            The Escrow & Safety first cryptocurrency utilizing marketplace
           </p>
           <p className="text-lg text-gray-400 mb-8 max-w-3xl mx-auto">
             A digital farmers market that meets Reaper Tech's shadowy, futuristic brand—a safe place to trade with grit and glow.
