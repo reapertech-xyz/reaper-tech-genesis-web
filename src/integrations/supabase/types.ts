@@ -203,8 +203,10 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           encrypted_email: string | null
+          government_id_verification_id: string | null
           id: string
           persona_account_id: string | null
+          selfie_verification_id: string | null
           updated_at: string
           username: string | null
           verification_completed_at: string | null
@@ -219,8 +221,10 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           encrypted_email?: string | null
+          government_id_verification_id?: string | null
           id: string
           persona_account_id?: string | null
+          selfie_verification_id?: string | null
           updated_at?: string
           username?: string | null
           verification_completed_at?: string | null
@@ -235,8 +239,10 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           encrypted_email?: string | null
+          government_id_verification_id?: string | null
           id?: string
           persona_account_id?: string | null
+          selfie_verification_id?: string | null
           updated_at?: string
           username?: string | null
           verification_completed_at?: string | null

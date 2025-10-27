@@ -124,13 +124,16 @@ Deno.serve(async (req) => {
           break;
       }
 
-      // Update profile with verification status
+      // Update profile with verification status and verification IDs
       const { error: updateError } = await supabaseAdmin
         .from('profiles')
         .update({
           verification_status: verificationStatus,
           verification_completed_at: verificationCompletedAt,
           verified_at: verificationStatus === 'verified' ? verificationCompletedAt : null,
+          persona_account_id: accountId,
+          government_id_verification_id: governmentIdVerification?.id || null,
+          selfie_verification_id: selfieVerification?.id || null,
         })
         .eq('verification_inquiry_id', inquiryId);
 
