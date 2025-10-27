@@ -202,10 +202,14 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          email_verified: boolean | null
           encrypted_email: string | null
           government_id_verification_id: string | null
           id: string
+          linked_domains: string[] | null
+          linked_wallets: string[] | null
           persona_account_id: string | null
+          primary_login_method: string | null
           selfie_verification_id: string | null
           updated_at: string
           username: string | null
@@ -220,10 +224,14 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          email_verified?: boolean | null
           encrypted_email?: string | null
           government_id_verification_id?: string | null
           id: string
+          linked_domains?: string[] | null
+          linked_wallets?: string[] | null
           persona_account_id?: string | null
+          primary_login_method?: string | null
           selfie_verification_id?: string | null
           updated_at?: string
           username?: string | null
@@ -238,10 +246,14 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          email_verified?: boolean | null
           encrypted_email?: string | null
           government_id_verification_id?: string | null
           id?: string
+          linked_domains?: string[] | null
+          linked_wallets?: string[] | null
           persona_account_id?: string | null
+          primary_login_method?: string | null
           selfie_verification_id?: string | null
           updated_at?: string
           username?: string | null
@@ -409,6 +421,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_domain_to_profile: {
+        Args: { _domain: string; _user_id: string }
+        Returns: undefined
+      }
+      add_wallet_to_profile: {
+        Args: { _user_id: string; _wallet: string }
+        Returns: undefined
+      }
       can_create_transaction: {
         Args: { _amount: number; _user_id: string }
         Returns: Json
