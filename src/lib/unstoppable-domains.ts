@@ -1,7 +1,7 @@
 import UAuth from '@uauth/js';
 
 const uauth = new UAuth({
-  clientID: import.meta.env.VITE_UNSTOPPABLE_DOMAINS_CLIENT_ID || '',
+  clientID: 'bc9347e2-5942-4b9a-b264-fda5c5dc1df1',
   redirectUri: window.location.origin + '/auth/callback',
   scope: 'openid wallet email:optional'
 });
