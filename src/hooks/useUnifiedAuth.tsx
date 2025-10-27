@@ -9,6 +9,11 @@ interface Profile {
   username: string | null;
   wallet_address: string | null;
   avatar_url: string | null;
+  linked_domains: string[] | null;
+  linked_wallets: string[] | null;
+  verification_status: string | null;
+  verified_at: string | null;
+  email_verified: boolean | null;
 }
 
 interface UnifiedAuthContextType {
