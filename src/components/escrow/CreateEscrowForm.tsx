@@ -40,6 +40,15 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
   const walletAddress = useAddress();
   const { toast } = useToast();
 
+  // Currency limits (unverified / verified)
+  const CURRENCY_LIMITS = {
+    USD: { unverified: 500, verified: 10000 },
+    EUR: { unverified: 460, verified: 9200 },     // ~0.92 EUR per USD
+    GBP: { unverified: 400, verified: 8000 },     // ~0.80 GBP per USD
+    CAD: { unverified: 680, verified: 13600 },    // ~1.36 CAD per USD
+    AUD: { unverified: 770, verified: 15400 },    // ~1.54 AUD per USD
+  };
+
   const [formData, setFormData] = useState({
     sellerId: prefillData?.sellerId || "",
     amount: prefillData?.amount || "",
@@ -125,17 +134,19 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
     setFormData({ ...formData, amount: value });
     setAmountError(null);
 
-    // Validate amount limits
+    // Validate amount limits based on currency
     const numericAmount = Number(value);
-    if (value && numericAmount > 0) {
+    if (value && numericAmount > 0 && formData.paymentMethod === 'traditional') {
       const isVerified = userProfile?.verification_status === 'verified';
-      const maxAmount = isVerified ? 10000 : 500;
+      const currencyKey = formData.currency as keyof typeof CURRENCY_LIMITS;
+      const limits = CURRENCY_LIMITS[currencyKey] || CURRENCY_LIMITS.USD;
+      const maxAmount = isVerified ? limits.verified : limits.unverified;
       
       if (numericAmount > maxAmount) {
         setAmountError(
           isVerified 
-            ? `Amount exceeds verified user limit of $${maxAmount.toLocaleString()}` 
-            : `Amount exceeds unverified user limit of $${maxAmount.toLocaleString()}. Please verify your account for higher limits.`
+            ? `Amount exceeds verified user limit of ${maxAmount.toLocaleString()} ${formData.currency}` 
+            : `Amount exceeds unverified user limit of ${maxAmount.toLocaleString()} ${formData.currency}. Please verify your account for higher limits.`
         );
       }
     }
@@ -208,23 +219,27 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
       return;
     }
 
-    // Validate amount limits
+    // Validate amount limits based on currency
     const numericAmount = Number(formData.amount);
-    const isVerified = userProfile?.verification_status === 'verified';
-    const maxAmount = isVerified ? 10000 : 500;
-    
-    if (numericAmount > maxAmount) {
-      setAmountError(
-        isVerified 
-          ? `Amount exceeds verified user limit of $${maxAmount.toLocaleString()}` 
-          : `Amount exceeds unverified user limit of $${maxAmount.toLocaleString()}. Please verify your account for higher limits.`
-      );
-      toast({
-        title: "Amount Limit Exceeded",
-        description: `Maximum transaction amount is $${maxAmount.toLocaleString()} for ${isVerified ? 'verified' : 'unverified'} users`,
-        variant: "destructive",
-      });
-      return;
+    if (formData.paymentMethod === 'traditional') {
+      const isVerified = userProfile?.verification_status === 'verified';
+      const currencyKey = formData.currency as keyof typeof CURRENCY_LIMITS;
+      const limits = CURRENCY_LIMITS[currencyKey] || CURRENCY_LIMITS.USD;
+      const maxAmount = isVerified ? limits.verified : limits.unverified;
+      
+      if (numericAmount > maxAmount) {
+        setAmountError(
+          isVerified 
+            ? `Amount exceeds verified user limit of ${maxAmount.toLocaleString()} ${formData.currency}` 
+            : `Amount exceeds unverified user limit of ${maxAmount.toLocaleString()} ${formData.currency}. Please verify your account for higher limits.`
+        );
+        toast({
+          title: "Amount Limit Exceeded",
+          description: `Maximum transaction amount is ${maxAmount.toLocaleString()} ${formData.currency} for ${isVerified ? 'verified' : 'unverified'} users`,
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     try {
@@ -406,10 +421,15 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
           {conversion && formData.paymentMethod === 'crypto' && !amountError && (
             <p className="text-xs text-cyan-400">{conversion}</p>
           )}
-          {!amountError && formData.amount && (
+          {!amountError && formData.amount && formData.paymentMethod === 'traditional' && (
             <p className="text-xs text-gray-400">
-              Limit: ${userProfile?.verification_status === 'verified' ? '10,000' : '500'} 
-              {userProfile?.verification_status !== 'verified' && ' (verify for higher limits)'}
+              {(() => {
+                const isVerified = userProfile?.verification_status === 'verified';
+                const currencyKey = formData.currency as keyof typeof CURRENCY_LIMITS;
+                const limits = CURRENCY_LIMITS[currencyKey] || CURRENCY_LIMITS.USD;
+                const maxAmount = isVerified ? limits.verified : limits.unverified;
+                return `Limit: ${maxAmount.toLocaleString()} ${formData.currency}${!isVerified ? ' (verify for higher limits)' : ''}`;
+              })()}
             </p>
           )}
         </div>
