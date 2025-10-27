@@ -24,6 +24,19 @@ interface PersonaWebhookPayload {
       status: string;
       reference_id?: string;
     };
+    relationships?: {
+      account?: {
+        data?: {
+          id: string;
+        };
+      };
+      verifications?: {
+        data?: Array<{
+          id: string;
+          type: string;
+        }>;
+      };
+    };
   };
 }
 
@@ -84,6 +97,12 @@ Deno.serve(async (req) => {
       const inquiryId = payload.data.id;
       const status = payload.data.attributes.status;
       const referenceId = payload.data.attributes.reference_id;
+      
+      // Extract verification IDs
+      const accountId = payload.data.relationships?.account?.data?.id || null;
+      const verifications = payload.data.relationships?.verifications?.data || [];
+      const governmentIdVerification = verifications.find(v => v.type === 'verification/government-id');
+      const selfieVerification = verifications.find(v => v.type === 'verification/selfie');
 
       let verificationStatus = 'pending';
       let verificationCompletedAt = null;
@@ -120,12 +139,16 @@ Deno.serve(async (req) => {
         throw updateError;
       }
 
-      // Log the webhook event
+      // Log the webhook event with verification IDs
       if (referenceId) {
         await logAuditEvent(supabaseAdmin, referenceId, 'verification_webhook_received', {
           inquiry_id: inquiryId,
           status,
           verification_status: verificationStatus,
+          persona_account_id: accountId,
+          government_id_verification_id: governmentIdVerification?.id || null,
+          selfie_verification_id: selfieVerification?.id || null,
+          completed_at: verificationCompletedAt,
         });
       }
 
