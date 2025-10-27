@@ -12,6 +12,7 @@ interface PersonaInquiryData {
   attributes: {
     'reference-id'?: string;
     'inquiry-template-id': string;
+    'email-address'?: string;
   };
 }
 
@@ -148,6 +149,13 @@ Deno.serve(async (req) => {
         throw new Error('Persona template ID not configured');
       }
 
+      // Get user's email if available
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('encrypted_email')
+        .eq('id', user.id)
+        .single();
+
       const inquiryData: PersonaInquiryData = {
         type: 'inquiry',
         attributes: {
@@ -155,6 +163,12 @@ Deno.serve(async (req) => {
           'inquiry-template-id': PERSONA_TEMPLATE_ID,
         },
       };
+
+      // Add email if user is logged in via email
+      if (user.email) {
+        inquiryData.attributes['email-address'] = user.email;
+        console.log('Including email in Persona inquiry:', user.email);
+      }
 
       console.log('Sending request to Persona API with template ID:', PERSONA_TEMPLATE_ID);
 
@@ -180,16 +194,23 @@ Deno.serve(async (req) => {
       const personaData = JSON.parse(responseText);
       const inquiryId = personaData.data.id;
       const sessionToken = personaData.data.attributes['session-token'];
+      
+      // Extract Persona account ID if available
+      const personaAccountId = personaData.data.relationships?.account?.data?.id || null;
 
       console.log('Inquiry created successfully. ID:', inquiryId);
+      if (personaAccountId) {
+        console.log('Persona account ID:', personaAccountId);
+      }
 
-      // Update profile with inquiry details
+      // Update profile with inquiry details and Persona account ID
       const { error: profileError } = await supabaseAdmin
         .from('profiles')
         .update({
           verification_inquiry_id: inquiryId,
           verification_initiated_at: new Date().toISOString(),
           verification_status: 'pending',
+          persona_account_id: personaAccountId,
         })
         .eq('id', user.id);
 
@@ -200,6 +221,8 @@ Deno.serve(async (req) => {
 
       await logAuditEvent(supabaseAdmin, user.id, 'verification_inquiry_created', {
         inquiry_id: inquiryId,
+        persona_account_id: personaAccountId,
+        email: user.email || null,
       });
 
       return new Response(

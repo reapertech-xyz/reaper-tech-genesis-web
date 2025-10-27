@@ -204,6 +204,7 @@ export type Database = {
           created_at: string
           encrypted_email: string | null
           id: string
+          persona_account_id: string | null
           updated_at: string
           username: string | null
           verification_completed_at: string | null
@@ -219,6 +220,7 @@ export type Database = {
           created_at?: string
           encrypted_email?: string | null
           id: string
+          persona_account_id?: string | null
           updated_at?: string
           username?: string | null
           verification_completed_at?: string | null
@@ -234,6 +236,7 @@ export type Database = {
           created_at?: string
           encrypted_email?: string | null
           id?: string
+          persona_account_id?: string | null
           updated_at?: string
           username?: string | null
           verification_completed_at?: string | null
