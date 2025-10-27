@@ -10,8 +10,7 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 interface PersonaInquiryData {
   type: string;
   attributes: {
-    reference_id: string;
-    template_id: string;
+    'reference-id'?: string;
     'inquiry-template-id': string;
   };
 }
@@ -139,14 +138,25 @@ Deno.serve(async (req) => {
     if (action === 'create-inquiry') {
       console.log('Creating Persona inquiry for user:', user.id);
 
+      if (!PERSONA_API_KEY) {
+        console.error('PERSONA_API_KEY is not set');
+        throw new Error('Persona API key not configured');
+      }
+
+      if (!PERSONA_TEMPLATE_ID) {
+        console.error('PERSONA_TEMPLATE_ID is not set');
+        throw new Error('Persona template ID not configured');
+      }
+
       const inquiryData: PersonaInquiryData = {
         type: 'inquiry',
         attributes: {
-          reference_id: user.id,
-          template_id: PERSONA_TEMPLATE_ID!,
-          'inquiry-template-id': PERSONA_TEMPLATE_ID!,
+          'reference-id': user.id,
+          'inquiry-template-id': PERSONA_TEMPLATE_ID,
         },
       };
+
+      console.log('Sending request to Persona API with template ID:', PERSONA_TEMPLATE_ID);
 
       const personaResponse = await fetch('https://withpersona.com/api/v1/inquiries', {
         method: 'POST',
@@ -158,15 +168,20 @@ Deno.serve(async (req) => {
         body: JSON.stringify({ data: inquiryData }),
       });
 
+      const responseText = await personaResponse.text();
+      console.log('Persona API response status:', personaResponse.status);
+      console.log('Persona API response:', responseText);
+
       if (!personaResponse.ok) {
-        const errorText = await personaResponse.text();
-        console.error('Persona API error:', errorText);
-        throw new Error(`Persona API error: ${errorText}`);
+        console.error('Persona API error. Status:', personaResponse.status, 'Response:', responseText);
+        throw new Error(`Persona API error (${personaResponse.status}): ${responseText}`);
       }
 
-      const personaData = await personaResponse.json();
+      const personaData = JSON.parse(responseText);
       const inquiryId = personaData.data.id;
       const sessionToken = personaData.data.attributes['session-token'];
+
+      console.log('Inquiry created successfully. ID:', inquiryId);
 
       // Update profile with inquiry details
       const { error: profileError } = await supabaseAdmin

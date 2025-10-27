@@ -61,9 +61,9 @@ export const PersonaVerificationFlow = ({
 
       // Initialize Persona client
       const client = new window.Persona.Client({
-        templateId: inquiry_id,
-        environmentId: 'sandbox', // Change to 'production' when ready
+        inquiryId: inquiry_id,
         sessionToken: session_token,
+        environment: 'sandbox', // Change to 'production' when ready
         onReady: () => {
           console.log('Persona verification flow ready');
           client.open();
