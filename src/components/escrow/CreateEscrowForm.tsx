@@ -570,7 +570,7 @@ const CreateEscrowForm = ({ onSuccess, listingId, prefillData }: CreateEscrowFor
 
       {/* Info */}
       <div className="p-4 bg-green-500/10 border border-green-500 rounded text-sm text-green-800">
-        <Shield className="h-4 w-4 inline mr-2 text-green-400" />
+        <Shield className="h-4 w-4 inline mr-2 text-green-800" />
         Your funds will be held securely until all parties confirm completion or a dispute is resolved.
       </div>
     </form>
