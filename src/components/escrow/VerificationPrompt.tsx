@@ -23,9 +23,16 @@ export const VerificationPrompt = ({
     setShowVerificationDialog(true);
   };
 
-  const handleVerificationComplete = () => {
+  const handlePersonaOpen = () => {
     setShowVerificationDialog(false);
+  };
+
+  const handleVerificationComplete = () => {
     onStartVerification?.();
+  };
+
+  const handleVerificationCancel = () => {
+    setShowVerificationDialog(false);
   };
 
   const getStatusBadge = () => {
@@ -111,7 +118,8 @@ export const VerificationPrompt = ({
           </DialogHeader>
           <PersonaVerificationFlow
             onComplete={handleVerificationComplete}
-            onCancel={() => setShowVerificationDialog(false)}
+            onCancel={handleVerificationCancel}
+            onPersonaOpen={handlePersonaOpen}
           />
         </DialogContent>
       </Dialog>

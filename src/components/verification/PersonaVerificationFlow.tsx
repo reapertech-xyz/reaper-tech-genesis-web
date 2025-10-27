@@ -15,11 +15,13 @@ declare global {
 interface PersonaVerificationFlowProps {
   onComplete?: () => void;
   onCancel?: () => void;
+  onPersonaOpen?: () => void;
 }
 
 export const PersonaVerificationFlow = ({ 
   onComplete, 
-  onCancel 
+  onCancel,
+  onPersonaOpen
 }: PersonaVerificationFlowProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,6 +68,7 @@ export const PersonaVerificationFlow = ({
         environment: 'sandbox', // Change to 'production' when ready
         onReady: () => {
           console.log('Persona verification flow ready');
+          onPersonaOpen?.();
           client.open();
         },
         onComplete: () => {
