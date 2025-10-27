@@ -45,13 +45,26 @@ export default function Profile() {
     try {
       const { error } = await supabase.auth.updateUser({ email });
       
-      if (error) throw error;
-
-      toast({
-        title: 'Verification email sent',
-        description: 'Please check your email to verify your new address.',
-      });
-      setEmail('');
+      if (error) {
+        // Check if it's a duplicate email error
+        if (error.message.includes('already registered') || 
+            error.message.includes('already exists') ||
+            error.message.includes('User already registered')) {
+          toast({
+            title: 'Email Already In Use',
+            description: 'This email is already linked to another account. Please use a different email or remove it from the other account first.',
+            variant: 'destructive',
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({
+          title: 'Verification email sent',
+          description: 'Please check your email to verify your new address.',
+        });
+        setEmail('');
+      }
     } catch (error: any) {
       toast({
         title: 'Error',
@@ -70,6 +83,48 @@ export default function Profile() {
     try {
       const { domain, wallet } = await loginWithUnstoppableDomains();
       
+      // Check if domain is already linked to another user
+      const { data: existingDomainProfiles, error: domainCheckError } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .contains('linked_domains', [domain]);
+
+      if (domainCheckError) throw domainCheckError;
+
+      const otherDomainUsers = existingDomainProfiles?.filter(p => p.id !== user.id) || [];
+
+      if (otherDomainUsers.length > 0) {
+        toast({
+          title: 'Domain Already Linked',
+          description: 'This domain is already linked to another account. It must be removed from that account before you can link it here.',
+          variant: 'destructive',
+        });
+        setIsLinkingDomain(false);
+        return;
+      }
+
+      // Check if wallet is already linked to another user (if wallet exists)
+      if (wallet) {
+        const { data: existingWalletProfiles, error: walletCheckError } = await supabase
+          .from('profiles')
+          .select('id, username')
+          .contains('linked_wallets', [wallet]);
+
+        if (walletCheckError) throw walletCheckError;
+
+        const otherWalletUsers = existingWalletProfiles?.filter(p => p.id !== user.id) || [];
+
+        if (otherWalletUsers.length > 0) {
+          toast({
+            title: 'Wallet Already Linked',
+            description: 'The wallet associated with this domain is already linked to another account. It must be removed from that account first.',
+            variant: 'destructive',
+          });
+          setIsLinkingDomain(false);
+          return;
+        }
+      }
+
       const { error } = await supabase.rpc('add_domain_to_profile', {
         _user_id: user.id,
         _domain: domain
@@ -108,6 +163,26 @@ export default function Profile() {
     if (!walletAddress || !user) return;
 
     try {
+      // Check if wallet is already linked to another user
+      const { data: existingProfiles, error: checkError } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .contains('linked_wallets', [walletAddress]);
+
+      if (checkError) throw checkError;
+
+      // Filter out the current user's profile
+      const otherUsers = existingProfiles?.filter(p => p.id !== user.id) || [];
+
+      if (otherUsers.length > 0) {
+        toast({
+          title: 'Wallet Already Linked',
+          description: 'This wallet address is already linked to another account. It must be removed from that account before you can link it here.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       await linkWalletToProfile(walletAddress);
       
       await supabase.rpc('add_wallet_to_profile', {
