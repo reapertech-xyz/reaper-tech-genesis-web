@@ -62,8 +62,8 @@ export default function Profile() {
         }
       } else {
         toast({
-          title: 'Verification email sent',
-          description: 'Please check your email to verify your new address.',
+          title: 'Verification emails sent',
+          description: 'Please check both your old and new email addresses to confirm the change.',
         });
         setEmail('');
       }
