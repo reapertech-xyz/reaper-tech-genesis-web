@@ -43,7 +43,11 @@ export default function Profile() {
 
     setIsUpdatingEmail(true);
     try {
-      const { error } = await supabase.auth.updateUser({ email });
+      const redirectUrl = `${window.location.origin}/profile`;
+      const { error } = await supabase.auth.updateUser(
+        { email },
+        { emailRedirectTo: redirectUrl }
+      );
       
       if (error) {
         // Check if it's a duplicate email error
