@@ -25,7 +25,7 @@ import {
 const ITEMS_PER_PAGE = 10;
 
 const EscrowDashboard = () => {
-  const { user, profile } = useUnifiedAuth();
+  const { user, profile, loading: authLoading } = useUnifiedAuth();
   const { transactions, loading, loadUserTransactions } = useEscrow();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,6 +34,9 @@ const EscrowDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    // Wait for auth to finish loading before checking/redirecting
+    if (authLoading) return;
+    
     if (!user && !profile) {
       navigate("/auth");
       return;
@@ -43,7 +46,19 @@ const EscrowDashboard = () => {
     if (userId) {
       loadUserTransactions(userId);
     }
-  }, [user, profile, navigate, loadUserTransactions]);
+  }, [user, profile, authLoading, navigate, loadUserTransactions]);
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const getStatusBadgeVariant = (status: EscrowStatus): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
