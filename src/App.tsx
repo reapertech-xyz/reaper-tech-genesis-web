@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { UnifiedAuthProvider } from "@/hooks/useUnifiedAuth";
+import { SubdomainRouter } from "@/components/SubdomainRouter";
 import DonationButton from "@/components/DonationButton";
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -33,24 +34,26 @@ const App = () => (
           <Sonner />
           <DonationButton />
           <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/shortcuts" element={<Shortcuts />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/bookmarks" element={<Bookmarks />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/seedvault" element={<SeedVault />} />
-            <Route path="/escrow" element={<EscrowDashboard />} />
-            <Route path="/admin/disputes" element={<DisputeDashboard />} />
-            <Route path="/admin/audit-logs" element={<AuditLogDashboard />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+            <SubdomainRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/shortcuts" element={<Shortcuts />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/bookmarks" element={<Bookmarks />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/seedvault" element={<SeedVault />} />
+                <Route path="/escrow" element={<EscrowDashboard />} />
+                <Route path="/admin/disputes" element={<DisputeDashboard />} />
+                <Route path="/admin/audit-logs" element={<AuditLogDashboard />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </SubdomainRouter>
+          </BrowserRouter>
         </UnifiedAuthProvider>
       </AuthProvider>
     </TooltipProvider>
